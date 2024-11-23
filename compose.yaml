@@ -1,0 +1,10 @@
+services:
+  database:
+    image: mysql:9.1
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db_suhi
+  web:
+    build: .
+    ports:
+      - "8080:80"
