@@ -16,15 +16,16 @@ class UsersRepository extends ServiceEntityRepository
         parent::__construct($registry, Users::class);
     }
 
-    public function GetUserById($value): array
+    public function GetUserById($id): array
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.id = :val')
-            ->setParameter('val', $value)
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getResult()
-            ;
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT * FROM users WHERE id = :id'
+        )->setParameter(':id', $id);
+
+        // returns an array of Product objects
+        return $query->getResult();
     }
 
 }

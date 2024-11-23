@@ -4,6 +4,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=db_suhi
+    ports:
+      - "3306:3306"
   web:
     build: .
     ports:
