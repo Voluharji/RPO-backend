@@ -2647,7 +2647,7 @@
             "extra": {
                 "class": "Symfony\\Flex\\Flex"
             },
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Symfony\\Flex\\": "src"
