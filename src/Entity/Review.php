@@ -22,7 +22,7 @@ class Review
 
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $rating = null;
-    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\ManyToOne(targetEntity: "Users")]
     #[ORM\JoinColumn(name: "users_id", referencedColumnName: "users_id")]
     private User $user;
     #[ORM\ManyToOne(targetEntity: "Product")]

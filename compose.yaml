@@ -1,12 +1,32 @@
 services:
   database:
+    container_name: symfony_mysql
     image: mysql:9.1
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=db_suhi
     ports:
       - "3306:3306"
+    networks:
+      - symfony
   web:
+    container_name: symfony_web
     build: .
     ports:
+      - "80:80"
+    networks:
+      - symfony
+  phpmyadmin:
+    container_name: symfony_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - database
+    ports:
       - "8080:80"
+    environment:
+      PMA_HOST: symfony_mysql
+      PMA_PORT: 3306
+    networks:
+      - symfony
+networks:
+    symfony:
