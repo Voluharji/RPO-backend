@@ -27,5 +27,36 @@ class UsersRepository extends ServiceEntityRepository
         // returns an array of Product objects
         return $query->getResult();
     }
+    public function GetUserByUsernameOrEmail(string $username): Users // samo za uporabnika
+    {
+        $entityManager = $this->getEntityManager();
 
+        $query = $entityManager->createQuery(
+            'SELECT * 
+                 FROM users
+                 WHERE username = :username or email = :email'
+        )->setParameter(':username', $username)->setParameter(':email', $username);
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
+   /* public function UpdateUser(Users $user, int $id): int // samo za uporabnika
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'UPDATE users
+                 SET username = :username,
+                 password = :password,
+                 email = :email,
+                 firstName = :firstName,
+                 lastName = :lastName,
+                 time_created = :time_created,
+                 phone = :phone
+                 WHERE users.id = :id'
+        )->setParameter(':username', $username)->setParameter(':email', $username)->;
+
+        // returns an array of Product objects
+        return $query->getSingleResult(); // vrne id spremenjenga objekta
+    }*/
 }

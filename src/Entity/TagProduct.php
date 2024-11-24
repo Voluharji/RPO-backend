@@ -11,31 +11,19 @@ class TagProduct
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $product_id = null;
-
     #[ORM\Column]
     private ?int $tag_id = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
+    #[ORM\ManyToOne(targetEntity: "Product")]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]
+    private Product $product;
+    #[ORM\ManyToOne(targetEntity: "Tag")]
+    #[ORM\JoinColumn(name: "tag_id", referencedColumnName: "tag_id")]
+    private Tag $tag;
     public function getProductId(): ?int
     {
         return $this->product_id;
     }
-
-    public function setProductId(int $product_id): static
-    {
-        $this->product_id = $product_id;
-
-        return $this;
-    }
-
     public function getTagId(): ?int
     {
         return $this->tag_id;

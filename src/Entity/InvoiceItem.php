@@ -12,11 +12,7 @@ class InvoiceItem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $invoice_item_id = null;
-
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $amount = null;
 
@@ -28,24 +24,16 @@ class InvoiceItem
 
     #[ORM\Column]
     private ?int $product_id = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
+    #[ORM\ManyToOne(targetEntity: "Invoice")]
+    #[ORM\JoinColumn(name: "invoice_id", referencedColumnName: "invoice_id")]
+    private Invoice $invoice;
+    #[ORM\ManyToOne(targetEntity: "Product")]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]
+    private Product $product;
     public function getInvoiceItemId(): ?int
     {
         return $this->invoice_item_id;
     }
-
-    public function setInvoiceItemId(int $invoice_item_id): static
-    {
-        $this->invoice_item_id = $invoice_item_id;
-
-        return $this;
-    }
-
     public function getAmount(): ?int
     {
         return $this->amount;

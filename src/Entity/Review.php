@@ -12,40 +12,26 @@ class Review
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $review_id = null;
-
     #[ORM\Column]
     private ?int $users_id = null;
-
     #[ORM\Column]
     private ?int $product_id = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $rating = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "users_id", referencedColumnName: "users_id")]
+    private User $user;
+    #[ORM\ManyToOne(targetEntity: "Product")]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]
+    private Product $product;
     public function getReviewId(): ?int
     {
         return $this->review_id;
     }
-
-    public function setReviewId(int $review_id): static
-    {
-        $this->review_id = $review_id;
-
-        return $this;
-    }
-
     public function getUsersId(): ?int
     {
         return $this->users_id;

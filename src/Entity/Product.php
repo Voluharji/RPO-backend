@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,11 +14,7 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $product_id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -31,24 +29,22 @@ class Product
 
     #[ORM\Column(length: 1000)]
     private ?string $description = null;
-
-    public function getId(): ?int
+    #[ORM\ManyToOne(targetEntity: "Category")]
+    #[ORM\JoinColumn(name: "category_id", referencedColumnName: "category_id")]
+    private Category $category;
+    #[ORM\ManyToMany(targetEntity: "Tag")]
+    #[ORM\JoinTable(name: "tag_product",
+        joinColumns: [new ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")],
+        inverseJoinColumns: [new ORM\JoinColumn(name: "tag_id", referencedColumnName: "tag_id")])]
+    private Collection $tags;
+    public function __construct()
     {
-        return $this->id;
+        $this->tags=new ArrayCollection();
     }
-
     public function getProductId(): ?int
     {
         return $this->product_id;
     }
-
-    public function setProductId(int $product_id): static
-    {
-        $this->product_id = $product_id;
-
-        return $this;
-    }
-
     public function getName(): ?string
     {
         return $this->name;

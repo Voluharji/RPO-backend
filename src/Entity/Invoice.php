@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\InvoiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,16 +14,15 @@ class Invoice
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $invoice_id = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $timeCreated = null;
 
     #[ORM\Column]
     private ?int $users_id = null;
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "users_id", referencedColumnName: "users_id")]
+    private User $user;
 
     public function getId(): ?int
     {
@@ -32,14 +33,6 @@ class Invoice
     {
         return $this->invoice_id;
     }
-
-    public function setInvoiceId(int $invoice_id): static
-    {
-        $this->invoice_id = $invoice_id;
-
-        return $this;
-    }
-
     public function getTimeCreated(): ?\DateTimeInterface
     {
         return $this->timeCreated;
