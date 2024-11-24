@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\InvoiceRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,6 +24,8 @@ class Invoice
     #[ORM\Column]
     private ?int $users_id = null;
 
+    #[ORM\OneToMany(targetEntity: InvoiceItem::class,mappedBy: 'invoice')]
+    private Collection $items;
     public function getId(): ?int
     {
         return $this->id;

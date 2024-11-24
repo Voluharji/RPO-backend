@@ -28,7 +28,8 @@ class InvoiceItem
 
     #[ORM\Column]
     private ?int $product_id = null;
-
+    #[ORM\ManyToOne(targetEntity: 'Class:Invoice', inversedBy: 'items')]
+    private Invoice $invoice;
     public function getId(): ?int
     {
         return $this->id;
