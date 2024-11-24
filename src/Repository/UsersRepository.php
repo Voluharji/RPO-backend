@@ -39,6 +39,16 @@ class UsersRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+    public function login(string $username, string $password): array{
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT u 
+            FROM App\Entity\Users u
+            WHERE u.username = :username OR u.email = :email and u.password = :password')->setParameter(':username', $username)->setParameter(':email', $username)->setParameter(':password', $password);
+
+        return $query->getResult();
+
+    }
    /* public function UpdateUser(Users $user, int $id): int // samo za uporabnika
     {
         $entityManager = $this->getEntityManager();
