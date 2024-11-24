@@ -14,7 +14,7 @@ class Review
     #[ORM\Column]
     private ?int $review_id = null;
     #[ORM\Column]
-    private ?int $users_id = null;
+    private ?int $user_id = null;
     #[ORM\Column]
     private ?int $product_id = null;
     #[ORM\Column(length: 255, nullable: true)]
@@ -22,8 +22,8 @@ class Review
 
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $rating = null;
-    #[ORM\ManyToOne(targetEntity: "Users")]
-    #[ORM\JoinColumn(name: "users_id", referencedColumnName: "users_id")]
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "user_id")]
     private User $user;
     #[ORM\ManyToOne(targetEntity: "Product")]
     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]

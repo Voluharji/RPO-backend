@@ -19,9 +19,9 @@ class Invoice
     private ?\DateTimeInterface $timeCreated = null;
 
     #[ORM\Column]
-    private ?int $users_id = null;
-    #[ORM\ManyToOne(targetEntity: "Users")]
-    #[ORM\JoinColumn(name: "users_id", referencedColumnName: "users_id")]
+    private ?int $user_id = null;
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "user_id")]
     private User $user;
 
     public function getId(): ?int
