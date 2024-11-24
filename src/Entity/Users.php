@@ -12,11 +12,7 @@ class Users
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $users_id = null;
-
     #[ORM\Column(length: 25)]
     private ?string $username = null;
 
@@ -37,24 +33,10 @@ class Users
 
     #[ORM\Column(nullable: true)]
     private ?int $phone_number = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function getUsersId(): ?int
     {
         return $this->users_id;
     }
-
-    public function setUsersId(int $users_id): static
-    {
-        $this->users_id = $users_id;
-
-        return $this;
-    }
-
     public function getUsername(): ?string
     {
         return $this->username;

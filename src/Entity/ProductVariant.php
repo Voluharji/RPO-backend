@@ -11,11 +11,7 @@ class ProductVariant
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
     private ?int $product_variant_id = null;
-
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $color = null;
 
@@ -27,24 +23,13 @@ class ProductVariant
 
     #[ORM\Column]
     private ?int $product_id = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
+    #[ORM\ManyToOne(targetEntity: "Product")]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]
+    private Product $product;
     public function getProductVariantId(): ?int
     {
         return $this->product_variant_id;
     }
-
-    public function setProductVariantId(int $product_variant_id): static
-    {
-        $this->product_variant_id = $product_variant_id;
-
-        return $this;
-    }
-
     public function getColor(): ?string
     {
         return $this->color;
