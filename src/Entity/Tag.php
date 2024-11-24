@@ -16,7 +16,8 @@ class Tag
     private ?int $tag_id = null;
     #[ORM\Column(length: 255)]
     private ?string $tag_name = null;
-    #[ORM\ManyToMany(targetEntity: "Product", mappedBy: "tags")]
+    #[ManyToMany(targetEntity: Product::class, inversedBy: 'tags')]
+    #[JoinTable(name: 'tag_product')]
     private Collection $products;
     public function __construct()
     {

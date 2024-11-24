@@ -20,7 +20,7 @@ class Invoice
 
     #[ORM\Column]
     private ?int $users_id = null;
-    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\ManyToOne(targetEntity: "Users")]
     #[ORM\JoinColumn(name: "users_id", referencedColumnName: "users_id")]
     private User $user;
 

@@ -32,10 +32,8 @@ class Product
     #[ORM\ManyToOne(targetEntity: "Category")]
     #[ORM\JoinColumn(name: "category_id", referencedColumnName: "category_id")]
     private Category $category;
-    #[ORM\ManyToMany(targetEntity: "Tag")]
-    #[ORM\JoinTable(name: "tag_product",
-        joinColumns: [new ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")],
-        inverseJoinColumns: [new ORM\JoinColumn(name: "tag_id", referencedColumnName: "tag_id")])]
+    #[ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
+
     private Collection $tags;
     public function __construct()
     {
