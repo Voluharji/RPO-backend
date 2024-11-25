@@ -17,7 +17,7 @@ use Symfony\Config\DoctrineConfig;
 class UserController extends AbstractController
 {
 
-    #[Route('/webapi/test', name: 'test')]
+    #[Route('/api/test', name: 'test')]
     public function test(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(Users::class);
@@ -30,7 +30,7 @@ class UserController extends AbstractController
 
     }
 
-    #[Route('/webapi/login', name: 'login')]
+    #[Route('/api/login', name: 'login')]
     public function login(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(Users::class);
@@ -42,7 +42,7 @@ class UserController extends AbstractController
         return $this->json($debug, 200);
 
     }
-    #[Route('/webapi/login_check', name: 'login_check')]
+    #[Route('/api/login_check', name: 'login_check')]
     public function login_check(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(Users::class);
