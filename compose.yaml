@@ -13,7 +13,7 @@ services:
     container_name: symfony_web
     build: .
     ports:
-      - "80:80"
+      - "8081:80"
     networks:
       - symfony
   phpmyadmin:
