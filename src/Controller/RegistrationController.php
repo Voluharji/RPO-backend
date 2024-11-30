@@ -17,7 +17,7 @@ class RegistrationController extends AbstractController
     {
         $request = Request::createFromGlobals();
         $User = new User();
-        if ($request->request->get('email') == null || !$request->request->get('password') == null || !$request->request->get('username') == null) {
+        if ($request->request->get('email') == null || $request->request->get('password') == null || $request->request->get('username') == null) {
             return new JsonResponse(["missing required fields"],400);
         }
         $User->setEmail($request->request->get('email'));
