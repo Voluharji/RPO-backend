@@ -29,7 +29,7 @@ class UserController extends AbstractController
 
     }
 
-   /* #[Route('/api/login', name: 'login')]
+    #[Route('/api/login', name: 'login')]
     public function login(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(User::class);
@@ -39,7 +39,7 @@ class UserController extends AbstractController
         }
 
 
-    }*/
+    }
     /*#[Route('/api/login_check', name: 'login_check')]
     public function login_check(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
