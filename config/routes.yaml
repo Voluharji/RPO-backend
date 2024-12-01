@@ -14,5 +14,6 @@ api_login_check:
     path: /api/login_check
 get_product:
     path: /api/get_product
+    controller: 'App\Controller\ProductController::getProduct'
 get_products:
     path: /api/get_products
