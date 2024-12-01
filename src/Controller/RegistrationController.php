@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Entity\Users;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,6 +40,6 @@ class RegistrationController extends AbstractController
 
         return $this->json([
             'message' => 'User registered successfully.'
-        ]);
+        ],200);
     }
 }
