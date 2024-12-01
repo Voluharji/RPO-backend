@@ -20,9 +20,9 @@ class ProductRepository extends ServiceEntityRepository
     //     * @return Product[] Returns an array of Product objects
     //     */
     /**
-     * @return Product[]
+     * @return Product
      */
-    public function getProductByID(int $price): array
+    public function getProductByID(int $price): Product
     {
         $entityManager = $this->getEntityManager();
 

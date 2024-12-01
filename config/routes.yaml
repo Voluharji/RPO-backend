@@ -12,3 +12,7 @@ user_registration:
     controller: 'App\Controller\RegistrationController::register'
 api_login_check:
     path: /api/login_check
+get_product:
+    path: /api/get_product
+get_products:
+    path: /api/get_products
