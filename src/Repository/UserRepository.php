@@ -53,28 +53,100 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
         return $user->getUserId();
     }
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getByEmail(string $email): ?User
+    {
+        $entityManager = $this->getEntityManager();
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $entityManager->createQuery(
+            'SELECT u
+             FROM App\Entity\User u
+             WHERE u.email = :email'
+        )
+            ->setParameter('email', $email)
+            ->getOneOrNullResult();
+    }
+
+    public function getByNameAndLastName(string $firstName, string $lastName): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT u
+             FROM App\Entity\User u
+             WHERE u.first_name = :firstName AND u.last_name = :lastName'
+        )
+            ->setParameter('firstName', $firstName)
+            ->setParameter('lastName', $lastName)
+            ->getOneOrNullResult();
+    }
+
+    public function getByPhoneNumber(int $phoneNumber): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT u
+             FROM App\Entity\User u
+             WHERE u.phone_number = :phoneNumber'
+        )
+            ->setParameter('phoneNumber', $phoneNumber)
+            ->getOneOrNullResult();
+    }
+
+    public function createUser(
+        string $email,
+        string $username,
+        array $roles,
+        string $password,
+        ?string $firstName = null,
+        ?string $lastName = null,
+        ?int $phoneNumber = null
+    ): User {
+        $user = new User();
+        $user->setEmail($email)
+            ->setUsername($username)
+            ->setRoles($roles)
+            ->setPassword($password)
+            ->setFirstName($firstName)
+            ->setLastName($lastName)
+            ->setPhoneNumber($phoneNumber)
+            ->setTimeCreated(new \DateTime()); // Set the current date and time
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        return $user;
+    }
+
+    public function getAllUsers(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT u
+             FROM App\Entity\User u'
+        )
+            ->getResult();
+    }
+    public function login(string $username): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT u
+             FROM App\Entity\User u
+             WHERE u.username = :username OR u.email = :username'
+        )
+            ->setParameter('username', $username)
+            ->getOneOrNullResult();
+    }
+    public function getUsersBy15(int $offset): array
+    {
+        $queryBuilder = $this->createQueryBuilder('u')
+            ->setFirstResult($offset)
+            ->setMaxResults(15)
+            ->orderBy('u.time_created', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

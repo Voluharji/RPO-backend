@@ -6,9 +6,7 @@ use App\Entity\Review;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Review>
- */
+
 class ReviewRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +14,75 @@ class ReviewRepository extends ServiceEntityRepository
         parent::__construct($registry, Review::class);
     }
 
-    //    /**
-    //     * @return Review[] Returns an array of Review objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getReviewById(int $id): ?Review
+    {
+        $entityManager = $this->getEntityManager();
 
-    //    public function findOneBySomeField($value): ?Review
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $entityManager->createQuery(
+            'SELECT r 
+             FROM App\Entity\Review r 
+             WHERE r.review_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+
+    public function getByRating(int $rating): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT r 
+             FROM App\Entity\Review r 
+             WHERE r.rating = :rating'
+        )
+            ->setParameter('rating', $rating)
+            ->getResult();
+    }
+
+    public function getByProductId(int $productId): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT r 
+             FROM App\Entity\Review r 
+             WHERE r.product_id = :productId'
+        )
+            ->setParameter('productId', $productId)
+            ->getResult();
+    }
+
+    public function getByUserId(int $userId): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT r 
+             FROM App\Entity\Review r 
+             WHERE r.users_id = :userId'
+        )
+            ->setParameter('userId', $userId)
+            ->getResult();
+    }
+
+    public function getAllReviews(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT r 
+             FROM App\Entity\Review r'
+        )
+            ->getResult();
+    }
+    public function getReviewsBy15(int $offset): array
+    {
+        $queryBuilder = $this->createQueryBuilder('r')
+            ->setFirstResult($offset)
+            ->setMaxResults(15)
+            ->orderBy('r.time_created', 'DESC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

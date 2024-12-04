@@ -16,28 +16,76 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-//    /**
-//     * @return Category[] Returns an array of Category objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getCategoryById(int $id): ?Category
+    {
+        $entityManager = $this->getEntityManager();
 
-//    public function findOneBySomeField($value): ?Category
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $entityManager->createQuery(
+            'SELECT c 
+             FROM App\Entity\Category c 
+             WHERE c.category_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+
+    public function getCategoryByParent(?int $parentId): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT c 
+             FROM App\Entity\Category c 
+             WHERE c.parent_category_id = :parentId'
+        )
+            ->setParameter('parentId', $parentId)
+            ->getResult();
+    }
+
+    public function getCategoryByName(string $name): ?Category
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT c 
+             FROM App\Entity\Category c 
+             WHERE c.category_name = :name'
+        )
+            ->setParameter('name', $name)
+            ->getOneOrNullResult();
+    }
+
+    public function getAllCategories(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT c 
+             FROM App\Entity\Category c'
+        )
+            ->getResult();
+    }
+
+    public function createCategory(string $name, ?Category $parentCategory = null): Category
+    {
+        $entityManager = $this->getEntityManager();
+
+        $category = new Category();
+        $category->setCategoryName($name);
+        $category->setParentCategory($parentCategory);
+
+        $entityManager->persist($category);
+        $entityManager->flush();
+
+        return $category;
+    }
+    public function getCategoriesBy15(int $offset): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->setFirstResult($offset)
+            ->setMaxResults(15)
+            ->orderBy('c.name', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

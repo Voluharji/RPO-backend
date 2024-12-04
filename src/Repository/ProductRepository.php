@@ -89,16 +89,13 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('categoryId', $categoryId)
             ->getResult();
     }
+    public function getProductsBy15(int $offset): array
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->setFirstResult($offset)
+            ->setMaxResults(15)
+            ->orderBy('p.time_created', 'ASC');
 
-
-
-    //    public function findOneBySomeField($value): ?Product
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
