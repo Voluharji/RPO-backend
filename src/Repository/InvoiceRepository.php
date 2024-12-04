@@ -3,12 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Invoice>
- */
 class InvoiceRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +14,77 @@ class InvoiceRepository extends ServiceEntityRepository
         parent::__construct($registry, Invoice::class);
     }
 
-    //    /**
-    //     * @return Invoice[] Returns an array of Invoice objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getInvoiceById(int $id): ?Invoice
+    {
+        $entityManager = $this->getEntityManager();
 
-    //    public function findOneBySomeField($value): ?Invoice
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $entityManager->createQuery(
+            'SELECT i 
+             FROM App\Entity\Invoice i 
+             WHERE i.invoice_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+
+    public function getInvoicesByUser(User $user): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT i 
+             FROM App\Entity\Invoice i 
+             WHERE i.users_id = :userId'
+        )
+            ->setParameter('userId', $user->getUsersId())
+            ->getResult();
+    }
+
+    public function getInvoicesByTimeCreated(\DateTimeInterface $start, \DateTimeInterface $end): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT i 
+             FROM App\Entity\Invoice i 
+             WHERE i.timeCreated BETWEEN :start AND :end'
+        )
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getResult();
+    }
+
+    public function createInvoice(User $user): Invoice
+    {
+        $entityManager = $this->getEntityManager();
+
+        $invoice = new Invoice();
+        $invoice->setUsersId($user->getUsersId());
+        $invoice->setTimeCreated(new \DateTime());
+
+        $entityManager->persist($invoice);
+        $entityManager->flush();
+
+        return $invoice;
+    }
+
+    public function getAllInvoices(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT i 
+             FROM App\Entity\Invoice i'
+        )
+            ->getResult();
+    }
+    public function getInvoicesBy15(int $offset): array
+    {
+        $queryBuilder = $this->createQueryBuilder('i')
+            ->setFirstResult($offset)
+            ->setMaxResults(15)
+            ->orderBy('i.timeCreated', 'DESC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

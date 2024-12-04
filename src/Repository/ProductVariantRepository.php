@@ -6,9 +6,6 @@ use App\Entity\ProductVariant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<ProductVariant>
- */
 class ProductVariantRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +13,66 @@ class ProductVariantRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductVariant::class);
     }
 
-    //    /**
-    //     * @return ProductVariant[] Returns an array of ProductVariant objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getProductVariantById(int $id): ?ProductVariant
+    {
+        $entityManager = $this->getEntityManager();
 
-    //    public function findOneBySomeField($value): ?ProductVariant
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $entityManager->createQuery(
+            'SELECT pv 
+             FROM App\Entity\ProductVariant pv 
+             WHERE pv.product_variant_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+
+    public function getByStock(int $stock): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT pv 
+             FROM App\Entity\ProductVariant pv 
+             WHERE pv.stock = :stock'
+        )
+            ->setParameter('stock', $stock)
+            ->getResult();
+    }
+
+    public function getByColor(string $color): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT pv 
+             FROM App\Entity\ProductVariant pv 
+             WHERE pv.color = :color'
+        )
+            ->setParameter('color', $color)
+            ->getResult();
+    }
+
+    public function getByProductId(int $productId): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT pv 
+             FROM App\Entity\ProductVariant pv 
+             WHERE pv.product_id = :productId'
+        )
+            ->setParameter('productId', $productId)
+            ->getResult();
+    }
+
+    public function getAllProductVariants(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT pv 
+             FROM App\Entity\ProductVariant pv'
+        )
+            ->getResult();
+    }
 }

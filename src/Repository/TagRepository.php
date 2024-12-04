@@ -16,28 +16,54 @@ class TagRepository extends ServiceEntityRepository
         parent::__construct($registry, Tag::class);
     }
 
-    //    /**
-    //     * @return Tag[] Returns an array of Tag objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getTagById(int $id): ?Tag
+    {
+        $entityManager = $this->getEntityManager();
 
-    //    public function findOneBySomeField($value): ?Tag
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $entityManager->createQuery(
+            'SELECT t
+             FROM App\Entity\Tag t
+             WHERE t.tag_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+
+    public function getTagByName(string $name): ?Tag
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT t
+             FROM App\Entity\Tag t
+             WHERE t.tag_name = :name'
+        )
+            ->setParameter('name', $name)
+            ->getOneOrNullResult();
+    }
+
+    public function getAllTags(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT t
+             FROM App\Entity\Tag t'
+        )
+            ->getResult();
+    }
+
+    public function getProductsByTagId(int $tagId): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT p
+             FROM App\Entity\Product p
+             JOIN p.tags t
+             WHERE t.tag_id = :tagId'
+        )
+            ->setParameter('tagId', $tagId)
+            ->getResult();
+    }
 }
