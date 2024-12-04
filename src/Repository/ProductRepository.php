@@ -89,11 +89,11 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('categoryId', $categoryId)
             ->getResult();
     }
-    public function getProductsBy15(int $offset): array
+    public function getProductsBy30(int $offset): array
     {
         $queryBuilder = $this->createQueryBuilder('p')
             ->setFirstResult($offset)
-            ->setMaxResults(15)
+            ->setMaxResults(30)
             ->orderBy('p.time_created', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();

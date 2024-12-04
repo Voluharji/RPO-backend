@@ -15,5 +15,11 @@ api_login_check:
 get_product:
     path: /api/get_product
     controller: 'App\Controller\ProductController::getProduct'
+<<<<<<< Updated upstream
+=======
+    methods: ['GET']
+>>>>>>> Stashed changes
 get_products:
     path: /api/get_products
+    controller: 'App\Controller\ProductController::getProducts'
+    methods: ['GET']
