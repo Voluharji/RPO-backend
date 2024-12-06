@@ -23,13 +23,14 @@ class ProductVariant
 
     #[ORM\Column]
     private ?int $product_id = null;
-    #[ORM\ManyToOne(targetEntity: "Product")]
-    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id", nullable: false)]
     private Product $product;
     public function getProductVariantId(): ?int
     {
         return $this->product_variant_id;
     }
+
     public function getColor(): ?string
     {
         return $this->color;
@@ -74,6 +75,16 @@ class ProductVariant
     public function setProductId(int $product_id): static
     {
         $this->product_id = $product_id;
+
+        return $this;
+    }
+    public function getProduct(): Product
+    {
+        return $this->product;
+    }
+    public function setProduct(Product $product): static
+    {
+        $this->product = $product;
 
         return $this;
     }

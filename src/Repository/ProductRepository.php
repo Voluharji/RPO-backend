@@ -16,13 +16,6 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
-
-    //    /**
-    //     * @return Product[] Returns an array of Product objects
-    //     */
-    /**
-     * @return Product[]
-     */
     public function getProductById(int $id): ?Product
     {
         $entityManager = $this->getEntityManager();
@@ -97,5 +90,36 @@ class ProductRepository extends ServiceEntityRepository
             ->orderBy('p.time_created', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();
+    }
+    public function findProductsByPriceRange(float $minPrice, float $maxPrice): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = '
+            SELECT p
+            FROM App\Entity\Product p
+            WHERE p.price >= :minPrice
+            AND p.price <= :maxPrice
+            ORDER BY p.price ASC
+        ';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('minPrice', $minPrice)
+            ->setParameter('maxPrice', $maxPrice);
+
+        return $query->getResult();
+    }
+    public function searchProduct(string $input): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = 'SELECT p 
+                FROM App\Entity\Product p
+                WHERE p.name LIKE :input';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('input', '%' . $input . '%');
+
+        return $query->getResult();
     }
 }

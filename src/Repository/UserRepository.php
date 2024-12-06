@@ -110,8 +110,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setFirstName($firstName)
             ->setLastName($lastName)
             ->setPhoneNumber($phoneNumber)
-            ->setTimeCreated(new \DateTime()); // Set the current date and time
-
+            ->setTimeCreated(new \DateTime());
         $this->_em->persist($user);
         $this->_em->flush();
 
@@ -148,5 +147,59 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->orderBy('u.time_created', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();
+    }
+    public function getUserByUsername(string $username): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u 
+            FROM App\Entity\User u
+            WHERE u.username = :username'
+        )->setParameter('username', $username);
+
+        return $query->getOneOrNullResult();
+    }
+    public function getUserById(int $id): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT p 
+         FROM App\Entity\User u 
+         WHERE u.product_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+    public function updateUser(User $user): bool
+    {
+        $entityManager = $this->getEntityManager();
+
+        $existingUser = $entityManager->createQuery(
+            'SELECT u 
+            FROM App\Entity\User u
+            WHERE u.username = :username AND u.user_id != :userId'
+        )
+            ->setParameter('username', $user->getUsername())
+            ->setParameter('userId', $user->getUserId())
+            ->getOneOrNullResult();
+
+        if ($existingUser) {
+            return false;
+        }
+        $existingUser = $this->find($user->getUserId());
+        if (!$existingUser) {
+            return false;
+        }
+        $existingUser->setUsername($user->getUsername());
+        $existingUser->setFirstName($user->getFirstName());
+        $existingUser->setLastName($user->getLastName());
+        $existingUser->setPhoneNumber($user->getPhoneNumber());
+
+        $entityManager->persist($existingUser);
+        $entityManager->flush();
+
+        return true;
     }
 }
