@@ -20,3 +20,7 @@ get_products:
     path: /api/get_products
     controller: 'App\Controller\ProductController::getProducts'
     methods: ['GET']
+product_search:
+    path: /api/product_search
+    controller: 'App\Controller\ProductController::productSearch'
+    methods: [ 'GET' ]

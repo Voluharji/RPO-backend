@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
 {
-    #[Route('/api/getProduct', name: 'get_product', methods: ['GET'])] // en izdelek fetcha po id
+    #[Route('/api/getProduct', name: 'app_product_get', methods: ['GET'])] // en izdelek fetcha po id
     public function getProduct(EntityManagerInterface $entityManager, SerializerInterface  $serializer): JsonResponse
     {
         $request = Request::createFromGlobals();
@@ -27,7 +27,7 @@ class ProductController extends AbstractController
         $productJson = $serializer->serialize($product, 'json');
         return JsonResponse::fromJsonString($productJson);
     }
-    #[Route('/api/getProducts', name: 'get_products', methods: ['GET'])] // po 15 izdelkov fetcha
+    #[Route('/api/getProducts', name: 'app_products_get', methods: ['GET'])] // po 30 izdelkov fetcha
     public function getProducts(EntityManagerInterface $entityManager,SerializerInterface $serializer): JsonResponse
     {
         $request = Request::createFromGlobals();

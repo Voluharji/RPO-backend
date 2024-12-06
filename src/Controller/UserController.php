@@ -11,45 +11,57 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Config\DoctrineConfig;
 
 class UserController extends AbstractController
 {
 
-    #[Route('/api/test', name: 'test')]
-    public function test(EntityManagerInterface $entityManager): JsonResponse{
+    #[Route('/api/user/getUserData', name: 'app_user_get_data', methods: ['GET'])]
+    public function getUserData(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(User::class);
-        $response = $repository->GetUserByUsernameOrEmail($request->get("username"));
-        if ($response === null)
-            $response = "No user found";
-
-        $debug = var_export($response, true);
-        return $this->json($debug, 200);
-
-    }
-
-    #[Route('/api/login', name: 'login')]
-    public function login(EntityManagerInterface $entityManager): JsonResponse{
-        $request = Request::createFromGlobals();
-        $repository = $entityManager->getRepository(User::class);
-        $response = $repository->login($request->get("username"));
-        if ($response === null || password_verify($request->get("password"), $response->getPassword()) === false) {
-            return $this->json("incorrect username or password.", 403);
+        if ($request->get("id") === null) {
+            return new JsonResponse("No user id provided",400);
         }
+        $response = $repository->GetUserById($request->get("id"));
+        if ($response === null)
+            return new JsonResponse("No user found by id",400);
 
-
+        //$debug = var_export($response, true);
+        return $this->json(Serializer::class->serialize($response,'json'), 200);
     }
-    /*#[Route('/api/login_check', name: 'login_check')]
-    public function login_check(EntityManagerInterface $entityManager): JsonResponse{
+    #[Route('/api/user/changeUserData', name: 'app_user_change_data', methods: ['POST'])]
+    public function changeUserData(EntityManagerInterface $entityManager) : JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(User::class);
-        $response = $repository->GetUserByUsernameOrEmail($request->get("username"));
-        if ($response === null)
-            $response = "No user found";
+        if ($request->get("id") === null) {
+            return new JsonResponse("No user id provided",400);
+        }
+        $user= $this->getUser();
+        if ($request->get("username") != Null) {
+            if ($repository->loadUserByIdentifier($request->get("username")) !== null) {
+                return new JsonResponse("Username is already taken!",400);
+            }
+            $user->setUsername($request->get("username"));
+        }
+        if ($request->get("email") != Null) {
+            if ($repository->loadUserByIdentifier($request->get("email")) !== null) {
+                return new JsonResponse("Email is already taken!",400);
+            }
+            $user->setEmail($request->get("username"));
+        }
+        if ($request->get("firstName") != Null) {
+            $user->setLastName($request->get("firstName"));
+        }
+        if ($request->get("lastName") != Null) {
+            $user->setLastName($request->get("lastName"));
+        }
+        if ($request->get("phoneNumber") != Null) {
+            $user->setPhoneNumber($request->get("phoneNumber"));
+        }
+      $repository->updateUser($user);
+      return $this->json("Succesfully updated user data.", 200);
+    }
 
-        $debug = var_export($response, true);
-        return $this->json($debug, 200);
-
-    }*/
 }
