@@ -50,20 +50,9 @@ class ProductRepository extends ServiceEntityRepository
         )
             ->getResult();
     }
-    public function createProduct(
-        string $name,
-        float $price,
-        Category $category,
-        string $description = "Sample description"
-    ): Product {
+    public function createProduct(Product $product): Product
+    {
         $entityManager = $this->getEntityManager();
-
-        $product = new Product();
-        $product->setName($name);
-        $product->setPrice($price);
-        $product->setCategoryId($category->getCategoryId());
-        $product->setDescription($description);
-        $product->setTimeCreated(new \DateTime());
 
         $entityManager->persist($product);
         $entityManager->flush();
@@ -122,4 +111,16 @@ class ProductRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+    public function deleteProductById(int $productId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $product = $entityManager->getRepository(Product::class)->find($productId);
+
+        if ($product) {
+            $entityManager->remove($product);
+            $entityManager->flush();
+        }
+    }
+
 }

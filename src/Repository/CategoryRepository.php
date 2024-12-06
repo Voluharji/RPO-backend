@@ -66,13 +66,9 @@ class CategoryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function createCategory(string $name, ?Category $parentCategory = null): Category
+    public function createCategory(Category $category): Category
     {
         $entityManager = $this->getEntityManager();
-
-        $category = new Category();
-        $category->setCategoryName($name);
-        $category->setParentCategory($parentCategory);
 
         $entityManager->persist($category);
         $entityManager->flush();
@@ -88,4 +84,16 @@ class CategoryRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+    public function deleteCategoryById(int $categoryId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $category = $entityManager->getRepository(Category::class)->find($categoryId);
+
+        if ($category) {
+            $entityManager->remove($category);
+            $entityManager->flush();
+        }
+    }
+
 }

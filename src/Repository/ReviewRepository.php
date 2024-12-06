@@ -90,4 +90,16 @@ class ReviewRepository extends ServiceEntityRepository
         $this->entityManager->persist($review);
         $this->entityManager->flush();
     }
+    public function deleteReviewById(int $reviewId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $review = $entityManager->getRepository(Review::class)->find($reviewId);
+
+        if ($review) {
+            $entityManager->remove($review);
+            $entityManager->flush();
+        }
+    }
+
 }

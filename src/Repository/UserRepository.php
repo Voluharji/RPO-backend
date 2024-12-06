@@ -93,29 +93,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
-    public function createUser(
-        string $email,
-        string $username,
-        array $roles,
-        string $password,
-        ?string $firstName = null,
-        ?string $lastName = null,
-        ?int $phoneNumber = null
-    ): User {
-        $user = new User();
-        $user->setEmail($email)
-            ->setUsername($username)
-            ->setRoles($roles)
-            ->setPassword($password)
-            ->setFirstName($firstName)
-            ->setLastName($lastName)
-            ->setPhoneNumber($phoneNumber)
-            ->setTimeCreated(new \DateTime());
-        $this->_em->persist($user);
-        $this->_em->flush();
+    public function createUser(User $user): User
+    {
+        $entityManager = $this->getEntityManager();
+
+        $entityManager->persist($user);
+        $entityManager->flush();
 
         return $user;
     }
+
 
     public function getAllUsers(): array
     {
@@ -201,5 +188,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $entityManager->flush();
 
         return true;
+    }
+    public function deleteUserById(int $userId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if ($user) {
+            $entityManager->remove($user);
+            $entityManager->flush();
+        }
     }
 }
