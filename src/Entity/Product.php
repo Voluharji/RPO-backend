@@ -35,9 +35,13 @@ class Product
     #[ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
 
     private Collection $tags;
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'])]
+    private Collection $variants;
+
     public function __construct()
     {
         $this->tags=new ArrayCollection();
+        $this->variants = new ArrayCollection();
     }
     public function getProductId(): ?int
     {
@@ -99,6 +103,30 @@ class Product
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+    public function getVariants(): Collection
+    {
+        return $this->variants;
+    }
+    public function addVariant(ProductVariant $variant): static
+    {
+        if (!$this->variants->contains($variant)) {
+            $this->variants[] = $variant;
+            $variant->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVariant(ProductVariant $variant): static
+    {
+        if ($this->variants->removeElement($variant)) {
+            if ($variant->getProduct() === $this) {
+                $variant->setProduct(null);
+            }
+        }
 
         return $this;
     }

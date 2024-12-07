@@ -16,13 +16,6 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
-
-    //    /**
-    //     * @return Product[] Returns an array of Product objects
-    //     */
-    /**
-     * @return Product[]
-     */
     public function getProductById(int $id): ?Product
     {
         $entityManager = $this->getEntityManager();
@@ -57,20 +50,9 @@ class ProductRepository extends ServiceEntityRepository
         )
             ->getResult();
     }
-    public function createProduct(
-        string $name,
-        float $price,
-        Category $category,
-        string $description = "Sample description"
-    ): Product {
+    public function createProduct(Product $product): Product
+    {
         $entityManager = $this->getEntityManager();
-
-        $product = new Product();
-        $product->setName($name);
-        $product->setPrice($price);
-        $product->setCategoryId($category->getCategoryId());
-        $product->setDescription($description);
-        $product->setTimeCreated(new \DateTime());
 
         $entityManager->persist($product);
         $entityManager->flush();
@@ -98,4 +80,47 @@ class ProductRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+    public function findProductsByPriceRange(float $minPrice, float $maxPrice): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = '
+            SELECT p
+            FROM App\Entity\Product p
+            WHERE p.price >= :minPrice
+            AND p.price <= :maxPrice
+            ORDER BY p.price ASC
+        ';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('minPrice', $minPrice)
+            ->setParameter('maxPrice', $maxPrice);
+
+        return $query->getResult();
+    }
+    public function searchProduct(string $input): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = 'SELECT p 
+                FROM App\Entity\Product p
+                WHERE p.name LIKE :input';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('input', '%' . $input . '%');
+
+        return $query->getResult();
+    }
+    public function deleteProductById(int $productId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $product = $entityManager->getRepository(Product::class)->find($productId);
+
+        if ($product) {
+            $entityManager->remove($product);
+            $entityManager->flush();
+        }
+    }
+
 }

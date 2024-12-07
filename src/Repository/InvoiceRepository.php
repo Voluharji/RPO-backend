@@ -55,18 +55,18 @@ class InvoiceRepository extends ServiceEntityRepository
     }
 
     public function createInvoice(User $user): Invoice
-    {
-        $entityManager = $this->getEntityManager();
+{
+    $entityManager = $this->getEntityManager();
 
-        $invoice = new Invoice();
-        $invoice->setUsersId($user->getUsersId());
-        $invoice->setTimeCreated(new \DateTime());
+    $invoice = new Invoice();
+    $invoice->setUsersId($user->getUsersId());
+    $invoice->setTimeCreated(new \DateTime());
 
-        $entityManager->persist($invoice);
-        $entityManager->flush();
+    $entityManager->persist($invoice);
+    $entityManager->flush();
 
-        return $invoice;
-    }
+    return $invoice;
+}
 
     public function getAllInvoices(): array
     {
@@ -87,4 +87,16 @@ class InvoiceRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+    public function deleteInvoiceById(int $invoiceId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $invoice = $entityManager->getRepository(Invoice::class)->find($invoiceId);
+
+        if ($invoice) {
+            $entityManager->remove($invoice);
+            $entityManager->flush();
+        }
+    }
+
 }
