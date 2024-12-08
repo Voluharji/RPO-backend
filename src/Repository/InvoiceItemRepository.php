@@ -54,19 +54,9 @@ class InvoiceItemRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function createInvoiceItem(
-        Invoice $invoice,
-        Product $product,
-        int $amount,
-        ?string $billingAddress = null
-    ): InvoiceItem {
+    public function createInvoiceItem(InvoiceItem $invoiceItem): InvoiceItem
+    {
         $entityManager = $this->getEntityManager();
-
-        $invoiceItem = new InvoiceItem();
-        $invoiceItem->setInvoiceId($invoice->getInvoiceId());
-        $invoiceItem->setProductId($product->getProductId());
-        $invoiceItem->setAmount($amount);
-        $invoiceItem->setBillingAddress($billingAddress);
 
         $entityManager->persist($invoiceItem);
         $entityManager->flush();

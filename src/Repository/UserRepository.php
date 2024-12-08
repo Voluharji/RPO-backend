@@ -93,30 +93,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
-    public function createUser(
-        string $email,
-        string $username,
-        array $roles,
-        string $password,
-        ?string $firstName = null,
-        ?string $lastName = null,
-        ?int $phoneNumber = null
-    ): User {
-        $user = new User();
-        $user->setEmail($email)
-            ->setUsername($username)
-            ->setRoles($roles)
-            ->setPassword($password)
-            ->setFirstName($firstName)
-            ->setLastName($lastName)
-            ->setPhoneNumber($phoneNumber)
-            ->setTimeCreated(new \DateTime()); // Set the current date and time
+    public function createUser(User $user): User
+    {
+        $entityManager = $this->getEntityManager();
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $entityManager->persist($user);
+        $entityManager->flush();
 
         return $user;
     }
+
 
     public function getAllUsers(): array
     {
@@ -148,5 +134,70 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->orderBy('u.time_created', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();
+    }
+    public function getUserByUsername(string $username): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u 
+            FROM App\Entity\User u
+            WHERE u.username = :username'
+        )->setParameter('username', $username);
+
+        return $query->getOneOrNullResult();
+    }
+    public function getUserById(int $id): ?User
+    {
+        $entityManager = $this->getEntityManager();
+
+        return $entityManager->createQuery(
+            'SELECT p 
+         FROM App\Entity\User u 
+         WHERE u.product_id = :id'
+        )
+            ->setParameter('id', $id)
+            ->getOneOrNullResult();
+    }
+    public function updateUser(User $user): bool
+    {
+        $entityManager = $this->getEntityManager();
+
+        $existingUser = $entityManager->createQuery(
+            'SELECT u 
+            FROM App\Entity\User u
+            WHERE u.username = :username AND u.user_id != :userId'
+        )
+            ->setParameter('username', $user->getUsername())
+            ->setParameter('userId', $user->getUserId())
+            ->getOneOrNullResult();
+
+        if ($existingUser) {
+            return false;
+        }
+        $existingUser = $this->find($user->getUserId());
+        if (!$existingUser) {
+            return false;
+        }
+        $existingUser->setUsername($user->getUsername());
+        $existingUser->setFirstName($user->getFirstName());
+        $existingUser->setLastName($user->getLastName());
+        $existingUser->setPhoneNumber($user->getPhoneNumber());
+
+        $entityManager->persist($existingUser);
+        $entityManager->flush();
+
+        return true;
+    }
+    public function deleteUserById(int $userId): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if ($user) {
+            $entityManager->remove($user);
+            $entityManager->flush();
+        }
     }
 }
