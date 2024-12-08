@@ -34,7 +34,7 @@ class RegistrationController extends AbstractController
         $User->setPhoneNumber($request->request->get('phoneNumber'));
         $User->setTimeCreated(new \DateTime());
         $User->setPassword($hashedPassword);
-
+        $User->setRoles(["ROLE_USER"]);
         $userRepository = $entityManager->getRepository(User::class);
         $userRepository->register($User);
 

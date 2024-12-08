@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class SearchController extends AbstractController
 {
-    #[Route('/product_search', name: 'app_product_search')]
+    #[Route('/api/product_search', name: 'app_product_search')]
     public function searchProducts(EntityManagerInterface $entityManager, SerializerInterface  $serializer): JsonResponse
     {
         $request = Request::createFromGlobals();

@@ -17,7 +17,7 @@ use Symfony\Config\DoctrineConfig;
 class UserController extends AbstractController
 {
 
-    #[Route('/api/user/getUserData', name: 'app_user_get_data', methods: ['GET'])]
+    #[Route('/api/user/get_user_data', name: 'app_user_get_data', methods: ['GET'])]
     public function getUserData(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(User::class);
@@ -31,8 +31,8 @@ class UserController extends AbstractController
         //$debug = var_export($response, true);
         return $this->json(Serializer::class->serialize($response,'json'), 200);
     }
-    #[Route('/api/user/changeUserData', name: 'app_user_change_data', methods: ['POST'])]
-    public function changeUserData(EntityManagerInterface $entityManager) : JsonResponse{
+    #[Route('/api/user/update_user_data', name: 'app_user_change_data', methods: ['POST'])]
+    public function updateUserData(EntityManagerInterface $entityManager) : JsonResponse{
         $request = Request::createFromGlobals();
         $repository = $entityManager->getRepository(User::class);
         if ($request->get("id") === null) {

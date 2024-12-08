@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\ProductVariant;
+use App\Entity\Review;
+use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,10 +22,20 @@ class ProductController extends AbstractController
         $request = Request::createFromGlobals();
         $id = $request->query->get('id');
         $productRepository = $entityManager->getRepository(Product::class);
+        $reviewRepository = $entityManager->getRepository(Review::class);
+        $tagRepository = $entityManager->getRepository(Tag::class);
+        $productVariantRepository = $entityManager->getRepository(ProductVariant::class);
         $product = $productRepository->getProductbyId($id);
+        //$tags = $product->getTags();
         if ($product === null) {
             return new JsonResponse("Product does not exist!",404);
         }
+        $productVariants = $productVariantRepository->getByProductId($id);
+        foreach ($productVariants as $productVariant) {
+            $product->addVariant($productVariant);
+        }
+       // $product->setProductVariants($productVariants);
+        //$product->setReviews($reviewRepository->getByProductId($id));
         //$product_str = var_export($product, true);
         $productJson = $serializer->serialize($product, 'json');
         return JsonResponse::fromJsonString($productJson);

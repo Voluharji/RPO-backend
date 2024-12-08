@@ -24,3 +24,15 @@ product_search:
     path: /api/product_search
     controller: 'App\Controller\ProductController::productSearch'
     methods: [ 'GET' ]
+add_review:
+    path: /api/user/review_add
+    controller: 'App\Controller\ReviewController::addReview'
+    methods: [ 'POST' ]
+get_user_data:
+    path: /api/user/get_user_data
+    controller: 'App\Controller\ProductController::getUserData'
+    methods: [ 'POST' ]
+update_user_data:
+    path: /api/user/update_user_data
+    controller: 'App\Controller\UserController::updateUserData'
+    methods: [ 'POST' ]
