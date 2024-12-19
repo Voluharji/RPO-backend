@@ -18,7 +18,7 @@ class SearchController extends AbstractController
         $request = Request::createFromGlobals();
         $search = $request->query->get('search');
         $productRepository = $entityManager->getRepository(Product::class);
-        $products = $productRepository->searchProducts($productRepository, $search);
+        $products = $productRepository->searchProduct($search);
         if ($products === null) {
             return new JsonResponse("No products found.",404);
         }

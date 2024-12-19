@@ -22,7 +22,7 @@ get_products:
     methods: ['GET']
 product_search:
     path: /api/product_search
-    controller: 'App\Controller\ProductController::productSearch'
+    controller: 'App\Controller\SearchController::productSearch'
     methods: [ 'GET' ]
 add_review:
     path: /api/user/review_add
