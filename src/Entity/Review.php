@@ -34,12 +34,12 @@ class Review
     }
     public function getUsersId(): ?int
     {
-        return $this->users_id;
+        return $this->user_id;
     }
 
-    public function setUsersId(int $users_id): static
+    public function setUsersId(int $user_id): static
     {
-        $this->users_id = $users_id;
+        $this->user_id = $user_id;
 
         return $this;
     }

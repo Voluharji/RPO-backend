@@ -13,7 +13,7 @@ use App\Repository\UserRepository;
 
 class RegistrationController extends AbstractController
 {
-        #[Route('/api/registration', name: 'register', methods: ['POST'])]
+    #[Route('/api/registration', name: 'app_user_register', methods: ['POST'])]
     public function register(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): JsonResponse
     {
         $request = Request::createFromGlobals();
@@ -34,7 +34,7 @@ class RegistrationController extends AbstractController
         $User->setPhoneNumber($request->request->get('phoneNumber'));
         $User->setTimeCreated(new \DateTime());
         $User->setPassword($hashedPassword);
-
+        $User->setRoles(["ROLE_USER"]);
         $userRepository = $entityManager->getRepository(User::class);
         $userRepository->register($User);
 

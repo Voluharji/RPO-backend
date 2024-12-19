@@ -110,6 +110,10 @@ class Product
     {
         return $this->variants;
     }
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
     public function addVariant(ProductVariant $variant): static
     {
         if (!$this->variants->contains($variant)) {
@@ -119,7 +123,11 @@ class Product
 
         return $this;
     }
-
+    public function setProductVariants(Collection $variants): static
+    {
+        $this->variants = $variants;
+        return $this;
+    }
     public function removeVariant(ProductVariant $variant): static
     {
         if ($this->variants->removeElement($variant)) {
