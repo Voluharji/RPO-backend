@@ -4,6 +4,7 @@ namespace App\Obj;
 
 class Filter
 {
+    public ?string $search;
     public ?float $minPrice;
     public ?float $maxPrice;
     public ?array $categories;
