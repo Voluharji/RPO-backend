@@ -25,7 +25,7 @@ class RegistrationController extends AbstractController
         if (!filter_var($request->get('email'), FILTER_VALIDATE_EMAIL)){
             return new JsonResponse(["invalid email address"],400);
         }
-        $hashedPassword = $passwordHasher->hashPassword($User, $request->request->get('password'));
+        $hashedPassword = $passwordHasher->hashPassword ($User, $request->request->get('password'));
 
         $User->setEmail($request->request->get('email'));
         $User->setUsername($request->request->get('username'));
