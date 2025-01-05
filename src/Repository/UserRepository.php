@@ -241,7 +241,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return in_array('ROLE_ADMIN', json_decode($roles, true));
     }
-    public function addProduct(Product $product, int $adminId): ?Product
+    public function AdAddProduct(Product $product, int $adminId): ?Product
     {
         if (!$this->isAdmin($adminId)) {
             throw new \Exception('Only admins can add products.');
@@ -254,7 +254,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $product;
     }
-    public function removeProductById(int $productId, int $adminId): void
+    public function AdRemoveProductById(int $productId, int $adminId): void
     {
         if (!$this->isAdmin($adminId)) {
             throw new \Exception('Only admins can remove products.');
@@ -270,7 +270,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $entityManager->remove($product);
         $entityManager->flush();
     }
-    public function updateProductById(int $productId, array $updatedData, int $adminId): Product
+    public function AdUpdateProductById(int $productId, array $updatedData, int $adminId): Product
     {
         if (!$this->isAdmin($adminId)) {
             throw new \Exception('Only admins can update products.');
@@ -301,4 +301,81 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $product;
     }
+    public function changePassword(int $userId, string $newPassword): void
+    {
+        $entityManager = $this->getEntityManager();
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            throw new \Exception('User not found.');
+        }
+
+        // Update the password
+        $user->setPassword($newPassword); // Ensure the password is already hashed before passing it
+        $entityManager->flush();
+    }
+    public function changeMail(int $userId, string $newEmail): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        // Check if the email is already in use
+        $dql = 'SELECT COUNT(u) 
+                FROM App\Entity\User u 
+                WHERE u.email = :newEmail';
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('newEmail', $newEmail);
+        $emailExists = $query->getSingleScalarResult();
+
+        if ($emailExists) {
+            throw new \Exception('Email is already in use.');
+        }
+
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            throw new \Exception('User not found.');
+        }
+
+        // Update the email
+        $user->setEmail($newEmail);
+        $entityManager->flush();
+    }
+    public function AdDeleteReviewById(int $reviewId, bool $isAdmin): void
+    {
+        if (!$isAdmin) {
+            throw new \Exception('Only admins can delete reviews.');
+        }
+
+        $entityManager = $this->getEntityManager();
+        $review = $entityManager->getRepository(Review::class)->find($reviewId);
+
+        if (!$review) {
+            throw new \Exception('Review not found.');
+        }
+
+        $entityManager->remove($review);
+        $entityManager->flush();
+    }
+    public function AdUpdateProductPrice(int $productId, float $newPrice, bool $isAdmin): void
+    {
+        if (!$isAdmin) {
+            throw new \Exception('Only admins can update product prices.');
+        }
+
+        $entityManager = $this->getEntityManager();
+        $product = $entityManager->getRepository(Product::class)->find($productId);
+
+        if (!$product) {
+            throw new \Exception('Product not found.');
+        }
+
+        if ($newPrice < 0) {
+            throw new \Exception('Price cannot be negative.');
+        }
+
+        $product->setPrice($newPrice);
+
+        $entityManager->flush();
+    }
+
 }
