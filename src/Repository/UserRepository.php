@@ -200,4 +200,105 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             $entityManager->flush();
         }
     }
+    public function checkIfNameExists(string $username): bool
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = 'SELECT COUNT(u.user_id) 
+                FROM App\Entity\User u 
+                WHERE u.username = :username';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('username', $username);
+
+        return $query->getSingleScalarResult() > 0;
+    }
+    public function checkIfMailExists(string $email): bool
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = 'SELECT COUNT(u.user_id) 
+                FROM App\Entity\User u 
+                WHERE u.email = :email';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('email', $email);
+
+        return $query->getSingleScalarResult() > 0;
+    }
+    public function isAdmin(int $userId): bool
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = 'SELECT u.roles 
+                FROM App\Entity\User u 
+                WHERE u.user_id = :userId';
+
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('userId', $userId);
+
+        $roles = $query->getSingleScalarResult();
+
+        return in_array('ROLE_ADMIN', json_decode($roles, true));
+    }
+    public function addProduct(Product $product, int $adminId): ?Product
+    {
+        if (!$this->isAdmin($adminId)) {
+            throw new \Exception('Only admins can add products.');
+        }
+
+        $entityManager = $this->getEntityManager();
+
+        $entityManager->persist($product);
+        $entityManager->flush();
+
+        return $product;
+    }
+    public function removeProductById(int $productId, int $adminId): void
+    {
+        if (!$this->isAdmin($adminId)) {
+            throw new \Exception('Only admins can remove products.');
+        }
+
+        $entityManager = $this->getEntityManager();
+        $product = $entityManager->getRepository(Product::class)->find($productId);
+
+        if (!$product) {
+            throw new \Exception('Product not found.');
+        }
+
+        $entityManager->remove($product);
+        $entityManager->flush();
+    }
+    public function updateProductById(int $productId, array $updatedData, int $adminId): Product
+    {
+        if (!$this->isAdmin($adminId)) {
+            throw new \Exception('Only admins can update products.');
+        }
+
+        $entityManager = $this->getEntityManager();
+        $product = $entityManager->getRepository(Product::class)->find($productId);
+
+        if (!$product) {
+            throw new \Exception('Product not found.');
+        }
+
+        // Apply updates
+        if (isset($updatedData['name'])) {
+            $product->setName($updatedData['name']);
+        }
+        if (isset($updatedData['price'])) {
+            $product->setPrice($updatedData['price']);
+        }
+        if (isset($updatedData['category_id'])) {
+            $product->setCategoryId($updatedData['category_id']);
+        }
+        if (isset($updatedData['description'])) {
+            $product->setDescription($updatedData['description']);
+        }
+
+        $entityManager->flush();
+
+        return $product;
+    }
 }
