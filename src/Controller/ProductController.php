@@ -30,19 +30,28 @@ class ProductController extends AbstractController
         if ($product === null) {
             return new JsonResponse("Product does not exist!",404);
         }
+        $imgRef = "";
         $productVariants = $productVariantRepository->getByProductId($id);
         foreach ($productVariants as $productVariant) {
+            if ($productVariant->getImageRef() !== null && $productVariant->getStock() > 0 && $imgRef != "") {
+                $imgRef = $productVariant->getImageRef();
+            }
             $product->addVariant($productVariant);
         }
        // $product->setProductVariants($productVariants);
         //$product->setReviews($reviewRepository->getByProductId($id));
         //$product_str = var_export($product, true);
-        $productJson = $serializer->serialize($product, 'json');
+
+        $productAssoc = (array) $product;
+        $productAssoc["imgRef"] = $imgRef; // rocno dod amo imgRef v izdelek...
+        $productJson = $serializer->serialize($productAssoc, 'json');
         return JsonResponse::fromJsonString($productJson);
     }
     #[Route('/api/getProducts', name: 'app_products_get', methods: ['GET'])] // po 30 izdelkov fetcha
     public function getProducts(EntityManagerInterface $entityManager,SerializerInterface $serializer): JsonResponse
     {
+        $productVariantRepository = $entityManager->getRepository(ProductVariant::class);
+
         $request = Request::createFromGlobals();
         $offset = $request->query->getInt('offset', 0);
         $productRepository = $entityManager->getRepository(Product::class);
