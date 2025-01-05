@@ -98,11 +98,11 @@ class ProductRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
-    public function searchProduct(string $input, ?Filter $filter = null): array
+    public function searchProduct(?Filter $filter = null): array
     {
         $entityManager = $this->getEntityManager();
 
-        // Start the DQL query with the base search condition (for the product name)
+        // Start the DQL query with the base condition
         $dql = 'SELECT p 
             FROM App\Entity\Product p
             LEFT JOIN p.categories c 
@@ -113,10 +113,10 @@ class ProductRepository extends ServiceEntityRepository
         // Initialize parameters array
         $parameters = [];
 
-        // Add input condition if input is provided
-        if (!empty($input)) {
-            $dql .= ' AND p.name LIKE :input';
-            $parameters['input'] = '%' . $input . '%';
+        // Add search string condition if provided in the filter
+        if ($filter && !empty($filter->searchString)) {
+            $dql .= ' AND p.name LIKE :searchString';
+            $parameters['searchString'] = '%' . $filter->searchString . '%';
         }
 
         // Add filter conditions (minPrice, maxPrice, categories, tags, sizes)
@@ -158,7 +158,6 @@ class ProductRepository extends ServiceEntityRepository
         // Execute the query and return the results
         return $query->getResult();
     }
-
     public function deleteProductById(int $productId): void
     {
         $entityManager = $this->getEntityManager();
