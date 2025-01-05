@@ -98,19 +98,67 @@ class ProductRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
-    public function searchProduct(string $input): array
+    public function searchProduct(string $input, ?Filter $filter = null): array
     {
         $entityManager = $this->getEntityManager();
 
+        // Start the DQL query with the base search condition (for the product name)
         $dql = 'SELECT p 
-                FROM App\Entity\Product p
-                WHERE p.name LIKE :input';
+            FROM App\Entity\Product p
+            LEFT JOIN p.categories c 
+            LEFT JOIN p.tags t 
+            LEFT JOIN p.productVariants pv
+            WHERE 1 = 1';
 
-        $query = $entityManager->createQuery($dql)
-            ->setParameter('input', '%' . $input . '%');
+        // Initialize parameters array
+        $parameters = [];
 
+        // Add input condition if input is provided
+        if (!empty($input)) {
+            $dql .= ' AND p.name LIKE :input';
+            $parameters['input'] = '%' . $input . '%';
+        }
+
+        // Add filter conditions (minPrice, maxPrice, categories, tags, sizes)
+        if ($filter) {
+            if ($filter->minPrice !== null) {
+                $dql .= ' AND p.price >= :minPrice';
+                $parameters['minPrice'] = $filter->minPrice;
+            }
+
+            if ($filter->maxPrice !== null) {
+                $dql .= ' AND p.price <= :maxPrice';
+                $parameters['maxPrice'] = $filter->maxPrice;
+            }
+
+            if (!empty($filter->categories)) {
+                $dql .= ' AND c.category_id IN (:categories)';
+                $parameters['categories'] = $filter->categories;
+            }
+
+            if (!empty($filter->tags)) {
+                $dql .= ' AND t.tag_id IN (:tags)';
+                $parameters['tags'] = $filter->tags;
+            }
+
+            if (!empty($filter->sizes)) {
+                $dql .= ' AND pv.size IN (:sizes)';
+                $parameters['sizes'] = $filter->sizes;
+            }
+        }
+
+        // Create the query with dynamic DQL and parameters
+        $query = $entityManager->createQuery($dql);
+
+        // Set the parameters for the query
+        foreach ($parameters as $key => $value) {
+            $query->setParameter($key, $value);
+        }
+
+        // Execute the query and return the results
         return $query->getResult();
     }
+
     public function deleteProductById(int $productId): void
     {
         $entityManager = $this->getEntityManager();
