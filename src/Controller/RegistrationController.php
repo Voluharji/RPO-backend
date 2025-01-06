@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\UserRepository;
+use function Webmozart\Assert\Tests\StaticAnalysis\null;
 
 class RegistrationController extends AbstractController
 {
@@ -40,6 +41,42 @@ class RegistrationController extends AbstractController
 
         return $this->json([
             'message' => 'User registered successfully.'
+        ],200);
+    }
+    #[Route('/api/username_check', name: 'app_username_check', methods: ['GET'])]
+    public function usernameCheck(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $request = Request::createFromGlobals();
+        $User = new User();
+
+
+        $User->setUsername($request->request->get('username'));
+        $userRepository = $entityManager->getRepository(User::class);
+        $user =  $userRepository->getUserByUsername($request->request->get('username'));
+        if (isset($user->username))
+            return $this->json([
+                'message' => 'Username is already taken.'
+            ],409);
+        return $this->json([
+            'message' => 'Username is available.'
+        ],200);
+    }
+    #[Route('/api/email_check', name: 'app_email_check', methods: ['GET'])]
+    public function emailCheck(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $request = Request::createFromGlobals();
+        if ($request->request->get('email') == null)
+            return $this->json([
+                'message' => 'Email is missing.' . $request->request->get('email')
+            ],400);
+        $userRepository = $entityManager->getRepository(User::class);
+        $user =  $userRepository->getByEmail($request->request->get('email'));
+        if (isset($user->username))
+            return $this->json([
+                'message' => 'Email is already taken.'
+            ],409);
+        return $this->json([
+            'message' => 'Email is available'
         ],200);
     }
 }
