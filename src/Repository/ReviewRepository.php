@@ -109,7 +109,7 @@ class ReviewRepository extends ServiceEntityRepository
     public function setUser(User $user): static
     {
         $this->user = $user;
-        $this->user_id = $user->getUserId(); // Sync the user ID
+        $this->user_id = $user->getUserId();
 
         return $this;
     }
@@ -121,7 +121,7 @@ class ReviewRepository extends ServiceEntityRepository
     public function setProduct(Product $product): static
     {
         $this->product = $product;
-        $this->product_id = $product->getProductId(); // Sync the product ID
+        $this->product_id = $product->getProductId();
 
         return $this;
     }

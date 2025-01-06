@@ -310,15 +310,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             throw new \Exception('User not found.');
         }
 
-        // Update the password
-        $user->setPassword($newPassword); // Ensure the password is already hashed before passing it
+        $user->setPassword($newPassword);
         $entityManager->flush();
     }
     public function changeMail(int $userId, string $newEmail): void
     {
         $entityManager = $this->getEntityManager();
-
-        // Check if the email is already in use
         $dql = 'SELECT COUNT(u) 
                 FROM App\Entity\User u 
                 WHERE u.email = :newEmail';

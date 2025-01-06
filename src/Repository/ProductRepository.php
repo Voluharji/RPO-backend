@@ -102,7 +102,6 @@ class ProductRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        // Start the DQL query with the base condition
         $dql = 'SELECT p 
             FROM App\Entity\Product p
             LEFT JOIN p.categories c 
@@ -110,16 +109,13 @@ class ProductRepository extends ServiceEntityRepository
             LEFT JOIN p.productVariants pv
             WHERE 1 = 1';
 
-        // Initialize parameters array
         $parameters = [];
 
-        // Add search string condition if provided in the filter
         if ($filter && !empty($filter->searchString)) {
             $dql .= ' AND p.name LIKE :searchString';
             $parameters['searchString'] = '%' . $filter->searchString . '%';
         }
 
-        // Add filter conditions (minPrice, maxPrice, categories, tags, sizes)
         if ($filter) {
             if ($filter->minPrice !== null) {
                 $dql .= ' AND p.price >= :minPrice';
@@ -147,15 +143,12 @@ class ProductRepository extends ServiceEntityRepository
             }
         }
 
-        // Create the query with dynamic DQL and parameters
         $query = $entityManager->createQuery($dql);
 
-        // Set the parameters for the query
         foreach ($parameters as $key => $value) {
             $query->setParameter($key, $value);
         }
 
-        // Execute the query and return the results
         return $query->getResult();
     }
     public function deleteProductById(int $productId): void

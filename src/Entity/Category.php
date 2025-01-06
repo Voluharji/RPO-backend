@@ -47,4 +47,16 @@ class Category
 
         return $this;
     }
+    public function getParentCategory(): ?Category
+    {
+        return $this->parentCategory;
+    }
+
+    public function setParentCategory(?Category $parentCategory): static
+    {
+        $this->parentCategory = $parentCategory;
+        $this->parent_category_id = $parentCategory?->getCategoryId(); // Sync the ID with the object
+
+        return $this;
+    }
 }
