@@ -87,8 +87,10 @@ class ReviewRepository extends ServiceEntityRepository
     }
     public function insertReview(Review $review): void
     {
-        $this->entityManager->persist($review);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($review);
+        $this->getEntityManager()->flush();
+        return;
+
     }
     public function deleteReviewById(int $reviewId): void
     {
@@ -101,5 +103,28 @@ class ReviewRepository extends ServiceEntityRepository
             $entityManager->flush();
         }
     }
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+        $this->user_id = $user->getUserId(); // Sync the user ID
+
+        return $this;
+    }
+    public function getProduct(): Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(Product $product): static
+    {
+        $this->product = $product;
+        $this->product_id = $product->getProductId(); // Sync the product ID
+
+        return $this;
+    }
 }
