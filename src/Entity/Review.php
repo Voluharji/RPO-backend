@@ -32,12 +32,12 @@ class Review
     {
         return $this->review_id;
     }
-    public function getUsersId(): ?int
+    public function getUserId(): ?int
     {
         return $this->user_id;
     }
 
-    public function setUsersId(int $user_id): static
+    public function setUserId(int $user_id): static
     {
         $this->user_id = $user_id;
 
@@ -47,6 +47,28 @@ class Review
     public function getProductId(): ?int
     {
         return $this->product_id;
+    }
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+    public function setProduct(Product $product): static
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function getProduct(): Product
+    {
+        return $this->product;
     }
 
     public function setProductId(int $product_id): static

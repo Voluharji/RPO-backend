@@ -87,8 +87,10 @@ class ReviewRepository extends ServiceEntityRepository
     }
     public function insertReview(Review $review): void
     {
-        $this->entityManager->persist($review);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($review);
+        $this->getEntityManager()->flush();
+        return;
+
     }
     public function deleteReviewById(int $reviewId): void
     {

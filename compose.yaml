@@ -12,6 +12,10 @@ services:
   web:
     container_name: symfony_web
     build: .
+    volumes:
+      - type: bind
+        source: ./
+        target: /var/www
     ports:
       - "8081:80"
     networks:

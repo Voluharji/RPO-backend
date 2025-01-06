@@ -36,3 +36,15 @@ update_user_data:
     path: /api/user/update_user_data
     controller: 'App\Controller\UserController::updateUserData'
     methods: [ 'POST' ]
+product_filter:
+    path: /api/filter
+    controller: 'App\Controller\FilterController::productFilter'
+    methods: [ 'POST' ]
+username_check:
+    path: /api/username_check
+    controller: 'App\Controller\RegistrationController::usernameCheck'
+    methods: [ 'GET' ]
+email_check:
+    path: /api/email_check
+    controller: 'App\Controller\RegistrationController::emailCheck'
+    methods: [ 'GET' ]
