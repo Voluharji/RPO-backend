@@ -31,7 +31,7 @@ class Product
     private ?string $description = null;
     #[ORM\ManyToOne(targetEntity: "Category")]
     #[ORM\JoinColumn(name: "category_id", referencedColumnName: "category_id")]
-    private Category $category;
+    private Category|null $category = null;
     #[ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
 
     private Collection $tags;

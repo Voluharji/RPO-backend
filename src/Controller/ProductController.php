@@ -66,6 +66,7 @@ class ProductController extends AbstractController
         $request = Request::createFromGlobals();
         $offset = $request->query->getInt('offset', 0);
         $productRepository = $entityManager->getRepository(Product::class);
+        $product = "test";
         $products = $productRepository->createProduct($product);
         $productsJson = $serializer->serialize($products, 'json');
         return JsonResponse::fromJsonString($productsJson);

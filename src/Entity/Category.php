@@ -3,11 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
+    public function __construct() {
+        $this->children = new ArrayCollection();
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,9 +21,17 @@ class Category
 
     #[ORM\Column]
     private ?int $parent_category_id = null;
-    #[ORM\ManyToOne(targetEntity: "Category")]
+    #[ORM\ManyToOne(targetEntity: Category::class,inversedBy: "children")]
     #[ORM\JoinColumn(name: "parent_category_id", referencedColumnName: "category_id")]
-    private ?Category $parentCategory;
+    private Category|null $parentCategory = null;
+
+    /**
+     * One Category has Many Categories.
+     * @var ArrayCollection<int, Category>
+     */
+    #[OneToMany(targetEntity: Category::class, mappedBy: 'parentCategory')]
+    private ArrayCollection $children;
+
     public function getCategoryId(): ?int
     {
         return $this->category_id;
@@ -51,7 +63,14 @@ class Category
     {
         return $this->parentCategory;
     }
-
+    public function getChildren(): ArrayCollection
+    {
+        return $this->children;
+    }
+    public function setChildren(ArrayCollection $children): static{
+        $this->children = $children;
+        return $this;
+    }
     public function setParentCategory(?Category $parentCategory): static
     {
         $this->parentCategory = $parentCategory;
