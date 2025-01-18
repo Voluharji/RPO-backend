@@ -32,8 +32,7 @@ class Product
     #[ORM\ManyToOne(targetEntity: "Category")]
     #[ORM\JoinColumn(name: "category_id", referencedColumnName: "category_id")]
     private ?Category $category = null;
-    #[ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
-
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
     private Collection $tags;
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'])]
     private Collection $variants;

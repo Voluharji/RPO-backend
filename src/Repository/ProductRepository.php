@@ -105,19 +105,19 @@ class ProductRepository extends ServiceEntityRepository
 
         $dql = 'SELECT p 
             FROM App\Entity\Product p
-            LEFT JOIN p.categories c 
+            LEFT JOIN p.category c 
             LEFT JOIN p.tags t 
-            LEFT JOIN p.productVariants pv
+            LEFT JOIN p.variants pv
             WHERE 1 = 1';
 
         $parameters = [];
 
-        if ($filter && !empty($filter->searchString)) {
-            $dql .= ' AND p.name LIKE :searchString';
-            $parameters['searchString'] = '%' . $filter->searchString . '%';
-        }
-
         if ($filter) {
+            if (!empty($filter->searchString)) {
+                $dql .= ' AND p.name LIKE :searchString';
+                $parameters['searchString'] = '%' . $filter->searchString . '%';
+            }
+
             if ($filter->minPrice !== null) {
                 $dql .= ' AND p.price >= :minPrice';
                 $parameters['minPrice'] = $filter->minPrice;
@@ -134,7 +134,7 @@ class ProductRepository extends ServiceEntityRepository
             }
 
             if (!empty($filter->tags)) {
-                $dql .= ' AND t.tag_id IN (:tags)';
+                $dql .= ' AND t.name IN (:tags)';
                 $parameters['tags'] = $filter->tags;
             }
 

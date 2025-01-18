@@ -127,4 +127,26 @@ class ReviewRepository extends ServiceEntityRepository
 
         return $this;
     }
+    public function updateReview(int $reviewId, ?string $description = null, ?int $rating = null): ?Review
+    {
+        $entityManager = $this->getEntityManager();
+
+        $review = $this->find($reviewId);
+
+        if (!$review) {
+            return null;
+        }
+
+        if ($description !== null) {
+            $review->setDescription($description);
+        }
+
+        if ($rating !== null) {
+            $review->setRating($rating);
+        }
+
+        $entityManager->flush();
+
+        return $review;
+    }
 }

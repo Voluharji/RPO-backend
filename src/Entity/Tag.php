@@ -14,28 +14,55 @@ class Tag
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $tag_id = null;
+
     #[ORM\Column(length: 255)]
-    private ?string $tag_name = null;
-    #[ManyToMany(targetEntity: Product::class, inversedBy: 'tags')]
-    #[JoinTable(name: 'tag_product')]
+    private ?string $name = null;
+
+    #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'tags')]
+    #[ORM\JoinTable(name: 'tag_product')]
     private Collection $products;
+
     public function __construct()
     {
-        $this->products=new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
+
     public function getTagId(): ?int
     {
         return $this->tag_id;
     }
-    public function getTagName(): ?string
+
+    public function getName(): ?string
     {
-        return $this->tag_name;
+        return $this->name;
     }
 
-    public function setTagName(string $tag_name): static
+    public function setName(string $name): static
     {
-        $this->tag_name = $tag_name;
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        $this->products->removeElement($product);
 
         return $this;
     }
 }
+

@@ -12,6 +12,7 @@ class ProductVariant
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $product_variant_id = null;
+
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $color = null;
 
@@ -21,14 +22,13 @@ class ProductVariant
     #[ORM\Column(length: 5)]
     private ?string $size = null;
 
-    #[ORM\Column]
-    private ?int $product_id = null;
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id", nullable: false)]
-    private Product $product;
+    private ?Product $product = null;
 
     #[ORM\Column(length: 1024, nullable: true)]
     private ?string $imgref = null;
+
     public function getProductVariantId(): ?int
     {
         return $this->product_variant_id;
@@ -70,21 +70,11 @@ class ProductVariant
         return $this;
     }
 
-    public function getProductId(): ?int
-    {
-        return $this->product_id;
-    }
-
-    public function setProductId(int $product_id): static
-    {
-        $this->product_id = $product_id;
-
-        return $this;
-    }
-    public function getProduct(): Product
+    public function getProduct(): ?Product
     {
         return $this->product;
     }
+
     public function setProduct(Product $product): static
     {
         $this->product = $product;
@@ -104,3 +94,4 @@ class ProductVariant
         return $this;
     }
 }
+
