@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -21,16 +22,18 @@ class Category
 
     #[ORM\Column]
     private ?int $parent_category_id = null;
-    #[ORM\ManyToOne(targetEntity: Category::class,inversedBy: "children")]
+    /**
+     * One Category has Many Categories.
+     * @var Collection<int, Category>
+     */
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'parentCategory')]
+    private Collection $children;
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'children')]
     #[ORM\JoinColumn(name: "parent_category_id", referencedColumnName: "category_id")]
     private Category|null $parentCategory = null;
 
-    /**
-     * One Category has Many Categories.
-     * @var ArrayCollection<int, Category>
-     */
-    #[OneToMany(targetEntity: Category::class, mappedBy: 'parentCategory')]
-    private ArrayCollection $children;
+
+
 
     public function getCategoryId(): ?int
     {
