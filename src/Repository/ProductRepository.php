@@ -17,7 +17,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
-    public function getProductById(int $id): ?Product
+    public function getProductById(int $id): array
     {
         $entityManager = $this->getEntityManager();
 
@@ -27,7 +27,7 @@ class ProductRepository extends ServiceEntityRepository
          WHERE p.product_id = :id'
         )
             ->setParameter('id', $id)
-            ->getOneOrNullResult();
+            ->getResult();
     }
     public function getProductByName(string $name): array
     {

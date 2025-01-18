@@ -26,6 +26,9 @@ class ProductVariant
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id", nullable: false)]
     private Product $product;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    private ?string $imgref = null;
     public function getProductVariantId(): ?int
     {
         return $this->product_variant_id;
@@ -85,6 +88,18 @@ class ProductVariant
     public function setProduct(Product $product): static
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    public function getImgref(): ?string
+    {
+        return $this->imgref;
+    }
+
+    public function setImgref(?string $imgref): static
+    {
+        $this->imgref = $imgref;
 
         return $this;
     }
