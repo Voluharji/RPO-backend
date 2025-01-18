@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Obj\Filter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +17,13 @@ class FilterController extends AbstractController
     public function productFilter(EntityManagerInterface $entityManager, SerializerInterface  $serializer): JsonResponse
     {
         $request = Request::createFromGlobals();
-        $filter = $request->query->get('filter');
+        $filter = new Filter();
+        $filter->categories = $request->query->get('categories');
+        $filter->minPrice = $request->query->get('minPrice');
+        $filter->maxPrice = $request->query->get('maxPrice');
+        $filter->tags = $request->query->get('tags');
+        $filter->search = $request->query->get('search');
+        //$filter = $request->query->get('filter');
         $productRepository = $entityManager->getRepository(Product::class);
         $products = $productRepository->searchProduct($filter);
         if ($products === null) {

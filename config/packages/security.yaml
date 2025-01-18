@@ -20,7 +20,7 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         api:
-            pattern: /api/user
+            pattern: /api/user/
             stateless: true
             jwt: ~
 
@@ -35,6 +35,7 @@ security:
     access_control:
          - { path: ^/api/login, roles: PUBLIC_ACCESS  }
          - { path: ^/api/user, roles: ROLE_USER  }
+         - { path: ^/api/admin, roles: ROLE_ADMIN  }
 
 when@test:
     security:

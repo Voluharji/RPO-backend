@@ -43,8 +43,8 @@ product_filter:
 username_check:
     path: /api/username_check
     controller: 'App\Controller\RegistrationController::usernameCheck'
-    methods: [ 'GET' ]
+    methods: [ 'POST' ]
 email_check:
     path: /api/email_check
     controller: 'App\Controller\RegistrationController::emailCheck'
-    methods: [ 'GET' ]
+    methods: [ 'POST' ]

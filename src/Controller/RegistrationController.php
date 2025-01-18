@@ -43,7 +43,7 @@ class RegistrationController extends AbstractController
             'message' => 'User registered successfully.'
         ],200);
     }
-    #[Route('/api/username_check', name: 'app_username_check', methods: ['GET'])]
+    #[Route('/api/username_check', name: 'app_username_check', methods: ['POST'])]
     public function usernameCheck(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): JsonResponse
     {
         $request = Request::createFromGlobals();
@@ -61,7 +61,7 @@ class RegistrationController extends AbstractController
             'message' => 'Username is available.'
         ],200);
     }
-    #[Route('/api/email_check', name: 'app_email_check', methods: ['GET'])]
+    #[Route('/api/email_check', name: 'app_email_check', methods: ['POST'])]
     public function emailCheck(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): JsonResponse
     {
         $request = Request::createFromGlobals();
