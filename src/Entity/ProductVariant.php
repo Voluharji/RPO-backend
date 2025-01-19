@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ProductVariantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ProductVariantRepository::class)]
 class ProductVariant
@@ -24,6 +26,8 @@ class ProductVariant
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id", nullable: false)]
+    #[ignore]
+    #[MaxDepth(1)]
     private ?Product $product = null;
 
     #[ORM\Column(length: 1024, nullable: true)]

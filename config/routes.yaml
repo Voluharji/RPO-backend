@@ -48,3 +48,19 @@ email_check:
     path: /api/email_check
     controller: 'App\Controller\RegistrationController::emailCheck'
     methods: [ 'POST' ]
+checkout:
+    path: /api/checkout
+    controller: 'App\Controller\CheckoutController::checkout'
+    methods: [ 'POST' ]
+admin_add_product:
+    path: /api/admin/add_product
+    controller: 'App\Controller\CheckoutController::addProduct'
+    methods: [ 'POST' ]
+admin_update_review:
+    path: /api/admin/update_review
+    controller: 'App\Controller\CheckoutController::updateReviewAdmin'
+    methods: [ 'POST' ]
+admin_add_review:
+    path: /api/admin/add_review
+    controller: 'App\Controller\CheckoutController::addReviewAdmin'
+    methods: [ 'POST' ]

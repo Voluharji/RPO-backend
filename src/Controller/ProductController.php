@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -32,12 +33,12 @@ class ProductController extends AbstractController
             return new JsonResponse("Product does not exist!",404);
         }
         $imgRef = "";
-        $productVariants = $productVariantRepository->getByProductId($id);
+        $productVariants = $product[0]->getProductVariants();
         foreach ($productVariants as $productVariant) {
-            if ($productVariant->getImageRef() !== null && $productVariant->getStock() > 0 && $imgRef != "") {
-                $imgRef = $productVariant->getImageRef();
+            if ($productVariant->getImgRef() !== null && $productVariant->getStock() > 0 && $imgRef != "") {
+                $imgRef = $productVariant->getImgRef();
             }
-            $product->addVariant($productVariant);
+            $product[0]->addVariant($productVariant);
         }
         // $product->setProductVariants($productVariants);
         //$product->setReviews($reviewRepository->getByProductId($id));
@@ -45,7 +46,9 @@ class ProductController extends AbstractController
 
         $productAssoc = (array) $product;
         $productAssoc["imgRef"] = $imgRef; // rocno dod amo imgRef v izdelek...
-        $productJson = $serializer->serialize($productAssoc, 'json');
+        $productJson = $serializer->serialize($productAssoc, 'json',[
+            AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,
+            AbstractNormalizer::CIRCULAR_REFERENCE_LIMIT => 10]);
         return JsonResponse::fromJsonString($productJson);
     }
     #[Route('/api/getProducts', name: 'app_products_get', methods: ['GET'])] // po 30 izdelkov fetcha

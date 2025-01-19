@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class FilterController extends AbstractController
@@ -30,7 +32,10 @@ class FilterController extends AbstractController
             return new JsonResponse("No products found.",404);
         }
         //$product_str = var_export($product, true);
-        $productsJson = $serializer->serialize($products, 'json');
+        $productsJson = $serializer->serialize($products, 'json',[
+            AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,
+            AbstractNormalizer::CIRCULAR_REFERENCE_LIMIT => 10
+        ]);
         return JsonResponse::fromJsonString($productsJson);
     }
 }

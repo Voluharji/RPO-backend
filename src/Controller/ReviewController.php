@@ -43,7 +43,7 @@ class ReviewController extends AbstractController
                 "product or user does not exist."
                 ,401);
         }
-        $review->setProduct($product);
+        $review->setProduct($product[0]);
 
 
         $review->setUser($userFromDb);
@@ -53,6 +53,79 @@ class ReviewController extends AbstractController
         return $this->json(
             "review added successfully"
         ,200);
+    }
+    #[Route('/api/admim/review_add', name: 'app_review_add_admin',methods: ['POST'])]
+    public function addReviewAdmin(EntityManagerInterface $entityManager, Security $securityService): JsonResponse
+    {
+        $user = $this->getUser();
+
+        $review = new Review();
+        $reviewRepository = $entityManager->getRepository(Review::class);
+        $userRepository = $entityManager->getRepository(User::class);
+        $productRepository = $entityManager->getRepository(Product::class);
+        //$Repository = $entityManager->getRepository(User::class);
+        $request = Request::createFromGlobals();
+        if ($request->request->get('description') == null || $request->request->get('rating') == null || $request->request->get('productId') == null || $request->get('userId') == null) {
+            return $this->json("invalid request", 400);
+        }
+        $review->setDescription($request->request->get('description'));
+        $review->setRating($request->request->get('rating'));
+        try {
+            $product = $productRepository->getProductById($request->get("productId"));
+            $userFromDb = $userRepository->getById($request->request->get("userId")); // troll fix...
+        }
+        catch (Exception $ex){
+            return $this->json(
+                "product or user does not exist."
+                ,401);
+        }
+        $review->setProduct($product);
+
+
+        $review->setUser($userFromDb);
+        //$review->setUserId($userFromDb->getUserId());
+
+        $reviewRepository->insertReview($review);
+        return $this->json(
+            "review added successfully"
+            ,200);
+    }
+    #[Route('/api/admim/review_add', name: 'app_review_add_admin',methods: ['POST'])]
+    public function updateReviewAdmin(EntityManagerInterface $entityManager, Security $securityService): JsonResponse
+    {
+        $user = $this->getUser();
+
+
+        $reviewRepository = $entityManager->getRepository(Review::class);
+        $userRepository = $entityManager->getRepository(User::class);
+        $productRepository = $entityManager->getRepository(Product::class);
+        //$Repository = $entityManager->getRepository(User::class);
+        $request = Request::createFromGlobals();
+        if ($request->request->get('description') == null || $request->request->get('rating') == null || $request->request->get('productId') == null || $request->get('userId') == null || $request->request->get('reviewId') == null) {
+            return $this->json("invalid request", 400);
+        }
+        $review = $reviewRepository->getReviewById($request->get("reviewId"));
+        $review->setDescription($request->request->get('description'));
+        $review->setRating($request->request->get('rating'));
+        try {
+            $product = $productRepository->getProductById($request->get("productId"));
+            $userFromDb = $userRepository->getById($request->request->get("userId")); // troll fix...
+        }
+        catch (Exception $ex){
+            return $this->json(
+                "product or user does not exist."
+                ,401);
+        }
+        $review->setProduct($product);
+
+
+        $review->setUser($userFromDb);
+        //$review->setUserId($userFromDb->getUserId());
+
+        $reviewRepository->UpdateReview($review);
+        return $this->json(
+            "Updated review successfully"
+            ,200);
     }
     #[Route('/api/review_get', name: 'get',methods: ['GET'])]
     public function getReviews(EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse

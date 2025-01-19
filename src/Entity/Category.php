@@ -29,7 +29,7 @@ class Category
      * One Category has Many Categories.
      * @var ArrayCollection<int, Category>
      */
-    #[OneToMany(targetEntity: Category::class, mappedBy: 'parentCategory')]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'parentCategory')]
     private ArrayCollection $children;
 
     public function getCategoryId(): ?int
