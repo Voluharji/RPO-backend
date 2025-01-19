@@ -32,14 +32,13 @@ class Product
     #[ORM\ManyToOne(targetEntity: "Category")]
     #[ORM\JoinColumn(name: "category_id", referencedColumnName: "category_id")]
     private ?Category $category = null;
-    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
-    private Collection $tags;
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'])]
     private Collection $variants;
-
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: TagProduct::class, cascade: ['persist', 'remove'])]
+    private Collection $tagProducts;
     public function __construct()
     {
-        $this->tags=new ArrayCollection();
+        $this->tagProducts = new ArrayCollection();
         $this->variants = new ArrayCollection();
     }
     public function getProductId(): ?int
@@ -132,6 +131,31 @@ class Product
         if ($this->variants->removeElement($variant)) {
             if ($variant->getProduct() === $this) {
                 $variant->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+    public function getTagProducts(): Collection
+    {
+        return $this->tagProducts;
+    }
+
+    public function addTagProduct(TagProduct $tagProduct): static
+    {
+        if (!$this->tagProducts->contains($tagProduct)) {
+            $this->tagProducts[] = $tagProduct;
+            $tagProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTagProduct(TagProduct $tagProduct): static
+    {
+        if ($this->tagProducts->removeElement($tagProduct)) {
+            if ($tagProduct->getProduct() === $this) {
+                $tagProduct->setProduct(null);
             }
         }
 

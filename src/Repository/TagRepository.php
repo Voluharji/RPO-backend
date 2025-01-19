@@ -16,7 +16,7 @@ class TagRepository extends ServiceEntityRepository
         parent::__construct($registry, Tag::class);
     }
 
-    public function getTagById(int $id): ?Tag
+    public function getTagById(int $id): array
     {
         $entityManager = $this->getEntityManager();
 
@@ -26,7 +26,7 @@ class TagRepository extends ServiceEntityRepository
              WHERE t.tag_id = :id'
         )
             ->setParameter('id', $id)
-            ->getOneOrNullResult();
+            ->getResult();
     }
 
     public function getTagByName(string $name): ?Tag

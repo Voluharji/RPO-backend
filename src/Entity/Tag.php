@@ -18,13 +18,13 @@ class Tag
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'tags')]
-    #[ORM\JoinTable(name: 'tag_product')]
-    private Collection $products;
+    #[ORM\OneToMany(mappedBy: 'tag', targetEntity: TagProduct::class, cascade: ['persist', 'remove'])]
+    private Collection $tagProducts;
+
 
     public function __construct()
     {
-        $this->products = new ArrayCollection();
+        $this->tagProducts = new ArrayCollection();
     }
 
     public function getTagId(): ?int
@@ -61,6 +61,31 @@ class Tag
     public function removeProduct(Product $product): static
     {
         $this->products->removeElement($product);
+
+        return $this;
+    }
+    public function getTagProducts(): Collection
+    {
+        return $this->tagProducts;
+    }
+
+    public function addTagProduct(TagProduct $tagProduct): static
+    {
+        if (!$this->tagProducts->contains($tagProduct)) {
+            $this->tagProducts[] = $tagProduct;
+            $tagProduct->setTag($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTagProduct(TagProduct $tagProduct): static
+    {
+        if ($this->tagProducts->removeElement($tagProduct)) {
+            if ($tagProduct->getTag() === $this) {
+                $tagProduct->setTag(null);
+            }
+        }
 
         return $this;
     }

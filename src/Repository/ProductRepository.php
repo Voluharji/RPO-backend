@@ -108,10 +108,11 @@ class ProductRepository extends ServiceEntityRepository
             LEFT JOIN p.category c 
             LEFT JOIN p.tags t 
             LEFT JOIN p.variants pv
-            WHERE 1 = 1';
+            WHERE 1 = 1'; // Initial condition to ensure we have a base query
 
         $parameters = [];
 
+        // Check if we have filters and apply them dynamically
         if ($filter) {
             if (!empty($filter->searchString)) {
                 $dql .= ' AND p.name LIKE :searchString';
@@ -128,22 +129,26 @@ class ProductRepository extends ServiceEntityRepository
                 $parameters['maxPrice'] = $filter->maxPrice;
             }
 
+            // Filter by categories
             if (!empty($filter->categories)) {
                 $dql .= ' AND c.category_id IN (:categories)';
                 $parameters['categories'] = $filter->categories;
             }
 
+            // Filter by tags
             if (!empty($filter->tags)) {
                 $dql .= ' AND t.name IN (:tags)';
                 $parameters['tags'] = $filter->tags;
             }
 
+            // Filter by sizes in product variants
             if (!empty($filter->sizes)) {
                 $dql .= ' AND pv.size IN (:sizes)';
                 $parameters['sizes'] = $filter->sizes;
             }
         }
 
+        // Prepare and execute the query with dynamic parameters
         $query = $entityManager->createQuery($dql);
 
         foreach ($parameters as $key => $value) {
@@ -152,6 +157,8 @@ class ProductRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+
     public function deleteProductById(int $productId): void
     {
         $entityManager = $this->getEntityManager();
