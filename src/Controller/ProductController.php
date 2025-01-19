@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
@@ -22,9 +24,6 @@ class ProductController extends AbstractController
         $request = Request::createFromGlobals();
         $id = $request->query->get('id');
         $productRepository = $entityManager->getRepository(Product::class);
-        $reviewRepository = $entityManager->getRepository(Review::class);
-        $tagRepository = $entityManager->getRepository(Tag::class);
-        $productVariantRepository = $entityManager->getRepository(ProductVariant::class);
         $product = $productRepository->getProductbyId($id);
         //$tags = $product->getTags();
         if ($product === null) {
@@ -36,15 +35,11 @@ class ProductController extends AbstractController
             if ($productVariant->getImgRef() !== null && $productVariant->getStock() > 0 && $imgRef != "") {
                 $imgRef = $productVariant->getImgRef();
             }
-            $product[0]->addVariant($productVariant);
+            //$product[0]->addVariant($productVariant);
         }
-        // $product->setProductVariants($productVariants);
-        //$product->setReviews($reviewRepository->getByProductId($id));
-        //$product_str = var_export($product, true);
-
         $productAssoc = (array) $product;
         $productAssoc["imgRef"] = $imgRef; // rocno dod amo imgRef v izdelek...
-        $productJson = $serializer->serialize($productAssoc, 'json',[
+        $productJson = $serializer->serialize($productAssoc[0], 'json',[
             AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,
             AbstractNormalizer::CIRCULAR_REFERENCE_LIMIT => 10]);
         return JsonResponse::fromJsonString($productJson);

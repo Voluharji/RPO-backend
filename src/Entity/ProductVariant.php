@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ProductVariantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ProductVariantRepository::class)]
 class ProductVariant
@@ -94,4 +96,13 @@ class ProductVariant
 
         return $this;
     }
+
+    public function getImgref(): ?string{
+        return $this->imgref;
+    }
+    public function setImgref(?string $imgref): static{
+        $this->imgref = $imgref;
+        return $this;
+    }
+
 }
