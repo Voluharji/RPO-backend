@@ -16,7 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Config\DoctrineConfig;
-
+use Symfony\Component\HttpFoundation\File\File;
 class UserController extends AbstractController
 {
 
@@ -125,8 +125,6 @@ class UserController extends AbstractController
     public function updateProfilePicture(EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher) : JsonResponse{
         $location = "/public/assets/images/profile_pictures/";
         $request = Request::createFromGlobals();
-        $UserRepository = $entityManager->getRepository(User::class);
-        $request = Request::createFromGlobals();
         $userRepository = $entityManager->getRepository(User::class);
         $user = $this->getUser();
         try {
@@ -140,10 +138,14 @@ class UserController extends AbstractController
         if ($request->get("id") === null) {
             return new JsonResponse("No user id provided",400);
         }
+        $file = new File();
         $file = $request->files->get('profile_picture');
         $nameId = $userFromDb->getUserId();
         $filesystem = new Filesystem();
-        $user = $UserRepository->getUserById($request->get("id"));
+        $filePath = $location . $nameId . "." . $file->guessExtension();
+        $filesystem->touch($filePath);
+        //$filesystem->appendToFile(, $filePath);
+        //$user = $UserRepository->getUserById($request->get("id"));
 
 
         return $this->json("Succesfully updated user data.", 200);
