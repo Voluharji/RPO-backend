@@ -40,6 +40,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     private ?\DateTimeInterface $time_created = null;
     #[ORM\Column(nullable: true)]
     private ?int $phone_number = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    private ?string $imgRef = null;
     public function getUserId(): ?int
     {
         return $this->user_id;
@@ -179,5 +182,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
             $payload['roles'], // Added by default
             $payload['email']  // Custom
         );
+    }
+
+    public function getImgRef(): ?string
+    {
+        return $this->imgRef;
+    }
+
+    public function setImgRef(?string $imgRef): static
+    {
+        $this->imgRef = $imgRef;
+
+        return $this;
     }
 }

@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\Migrations\Configuration\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Base;
+use mysql_xdevapi\Exception;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,16 +23,26 @@ class UserController extends AbstractController
     #[Route('/api/user/get_user_data', name: 'app_user_get_data', methods: ['GET'])]
     public function getUserData(EntityManagerInterface $entityManager): JsonResponse{
         $request = Request::createFromGlobals();
-        $repository = $entityManager->getRepository(User::class);
-        if ($request->get("id") === null) {
-            return new JsonResponse("No user id provided",400);
+        $userRepository = $entityManager->getRepository(User::class);
+        $user = $this->getUser();
+        try {
+            $userFromDb = $userRepository->getByEmail($user->getUserIdentifier()); // troll fix...
         }
-        $response = $repository->GetUserById($request->get("id"));
-        if ($response === null)
-            return new JsonResponse("No user found by id",400);
-
+        catch (Exception $ex){
+            return $this->json(
+                "user does not exist."
+                ,401);
+        }
+        $userData = array(
+            "firstName" => $userFromDb->getFirstName(),
+            "lastName" => $userFromDb->getLastName(),
+            "email" => $userFromDb->getEmail(),
+            "phoneNumber" => $userFromDb->getPhoneNumber(),
+            "timeCreated" => $userFromDb->getTimeCreated(),
+            "imgRef" => $userFromDb->getImgRef(),
+        );
         //$debug = var_export($response, true);
-        return $this->json(Serializer::class->serialize($response,'json'), 200);
+        return $this->json($userData, 200);
     }
     #[Route('/api/user/update_user_data', name: 'app_user_change_data', methods: ['POST'])]
     public function updateUserData(EntityManagerInterface $entityManager) : JsonResponse{
@@ -101,5 +113,18 @@ class UserController extends AbstractController
         $UserRepository->updateUser($user);
         return $this->json("Succesfully updated user data.", 200);
     }
-
+    #[Route('/api/user/update_profile_picture', name: 'app_user_change_data', methods: ['POST'])]
+    public function updateProfilePicture(EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher) : JsonResponse{
+        $request = Request::createFromGlobals();
+        $UserRepository = $entityManager->getRepository(User::class);
+        if ($request->get("id") === null) {
+            return new JsonResponse("No user id provided",400);
+        }
+        $filesystem = new Filesystem();
+        $user= $UserRepository->getUserById($request->get("id"));
+        $file = $request->files->get('file');
+        $hashedPassword = $passwordHasher->hashPassword ($user, $request->request->get('password'));
+        $UserRepository->updateUser($user);
+        return $this->json("Succesfully updated user data.", 200);
+    }
 }
