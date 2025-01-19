@@ -6,7 +6,9 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -31,16 +33,16 @@ class Product
     private ?string $description = null;
     #[ORM\ManyToOne(targetEntity: "Category")]
     #[ORM\JoinColumn(name: "category_id", referencedColumnName: "category_id")]
-    private Category $category;
-    #[ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
-
-    private Collection $tags;
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'])]
+    #[MaxDepth(1)]
+    private ?Category $category = null;
+    #[ORM\OneToMany(targetEntity: ProductVariant::class, mappedBy: 'product', cascade: ['persist', 'remove'])]
+    #[MaxDepth(1)]
     private Collection $variants;
-
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'products')]
+    #[MaxDepth(1)]
+    private Collection $tags;
     public function __construct()
     {
-        $this->tags=new ArrayCollection();
         $this->variants = new ArrayCollection();
     }
     public function getProductId(): ?int
@@ -114,6 +116,11 @@ class Product
     {
         return $this->tags;
     }
+    public function setTags(Collection $tags): Collection
+    {
+        $this->tags = $tags;
+        return $this->tags;
+    }
     public function addVariant(ProductVariant $variant): static
     {
         if (!$this->variants->contains($variant)) {
@@ -133,6 +140,31 @@ class Product
         if ($this->variants->removeElement($variant)) {
             if ($variant->getProduct() === $this) {
                 $variant->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+    public function getProductVariants(): Collection
+    {
+        return $this->variants;
+    }
+
+    public function addTag(Tag $tag): static
+    {
+        if (!$this->tagProducts->contains($tag)) {
+            $this->tagProducts[] = $tag;
+            $tag->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tags): static
+    {
+        if ($this->tags->removeElement($tags)) {
+            if ($tags->getProducts()->contains($this)) {
+                $tags->removeProduct($this);
             }
         }
 

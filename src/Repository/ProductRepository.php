@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Obj\Filter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,7 +17,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
-    public function getProductById(int $id): ?Product
+    public function getProductById(int $id): array
     {
         $entityManager = $this->getEntityManager();
 
@@ -26,7 +27,7 @@ class ProductRepository extends ServiceEntityRepository
          WHERE p.product_id = :id'
         )
             ->setParameter('id', $id)
-            ->getOneOrNullResult();
+            ->getResult();
     }
     public function getProductByName(string $name): array
     {
@@ -102,25 +103,22 @@ class ProductRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        // Start the DQL query with the base condition
         $dql = 'SELECT p 
             FROM App\Entity\Product p
-            LEFT JOIN p.categories c 
+            LEFT JOIN p.category c 
             LEFT JOIN p.tags t 
-            LEFT JOIN p.productVariants pv
-            WHERE 1 = 1';
+            LEFT JOIN p.variants pv
+            WHERE 1 = 1'; // Initial condition to ensure we have a base query
 
-        // Initialize parameters array
         $parameters = [];
 
-        // Add search string condition if provided in the filter
-        if ($filter && !empty($filter->searchString)) {
-            $dql .= ' AND p.name LIKE :searchString';
-            $parameters['searchString'] = '%' . $filter->searchString . '%';
-        }
-
-        // Add filter conditions (minPrice, maxPrice, categories, tags, sizes)
+        // Check if we have filters and apply them dynamically
         if ($filter) {
+            if (!empty($filter->searchString)) {
+                $dql .= ' AND p.name LIKE :searchString';
+                $parameters['searchString'] = '%' . $filter->searchString . '%';
+            }
+
             if ($filter->minPrice !== null) {
                 $dql .= ' AND p.price >= :minPrice';
                 $parameters['minPrice'] = $filter->minPrice;
@@ -131,33 +129,36 @@ class ProductRepository extends ServiceEntityRepository
                 $parameters['maxPrice'] = $filter->maxPrice;
             }
 
+            // Filter by categories
             if (!empty($filter->categories)) {
                 $dql .= ' AND c.category_id IN (:categories)';
                 $parameters['categories'] = $filter->categories;
             }
 
+            // Filter by tags
             if (!empty($filter->tags)) {
-                $dql .= ' AND t.tag_id IN (:tags)';
+                $dql .= ' AND t.name IN (:tags)';
                 $parameters['tags'] = $filter->tags;
             }
 
+            // Filter by sizes in product variants
             if (!empty($filter->sizes)) {
                 $dql .= ' AND pv.size IN (:sizes)';
                 $parameters['sizes'] = $filter->sizes;
             }
         }
 
-        // Create the query with dynamic DQL and parameters
+        // Prepare and execute the query with dynamic parameters
         $query = $entityManager->createQuery($dql);
 
-        // Set the parameters for the query
         foreach ($parameters as $key => $value) {
             $query->setParameter($key, $value);
         }
 
-        // Execute the query and return the results
         return $query->getResult();
     }
+
+
     public function deleteProductById(int $productId): void
     {
         $entityManager = $this->getEntityManager();

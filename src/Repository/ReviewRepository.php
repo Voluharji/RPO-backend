@@ -111,7 +111,7 @@ class ReviewRepository extends ServiceEntityRepository
     public function setUser(User $user): static
     {
         $this->user = $user;
-        $this->user_id = $user->getUserId(); // Sync the user ID
+        $this->user_id = $user->getUserId();
 
         return $this;
     }
@@ -123,8 +123,30 @@ class ReviewRepository extends ServiceEntityRepository
     public function setProduct(Product $product): static
     {
         $this->product = $product;
-        $this->product_id = $product->getProductId(); // Sync the product ID
+        $this->product_id = $product->getProductId();
 
         return $this;
+    }
+    public function updateReview(int $reviewId, ?string $description = null, ?int $rating = null): ?Review
+    {
+        $entityManager = $this->getEntityManager();
+
+        $review = $this->find($reviewId);
+
+        if (!$review) {
+            return null;
+        }
+
+        if ($description !== null) {
+            $review->setDescription($description);
+        }
+
+        if ($rating !== null) {
+            $review->setRating($rating);
+        }
+
+        $entityManager->flush();
+
+        return $review;
     }
 }

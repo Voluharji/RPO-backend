@@ -16,7 +16,7 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function getCategoryById(int $id): ?Category
+    public function getCategoryById(int $id): array
     {
         $entityManager = $this->getEntityManager();
 
@@ -26,7 +26,7 @@ class CategoryRepository extends ServiceEntityRepository
              WHERE c.category_id = :id'
         )
             ->setParameter('id', $id)
-            ->getOneOrNullResult();
+            ->getResult();
     }
 
     public function getCategoryByParent(?int $parentId): array

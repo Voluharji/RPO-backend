@@ -13,7 +13,7 @@ class ProductVariantRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductVariant::class);
     }
 
-    public function getProductVariantById(int $id): ?ProductVariant
+    public function getProductVariantById(int $id): array
     {
         $entityManager = $this->getEntityManager();
 
@@ -23,7 +23,7 @@ class ProductVariantRepository extends ServiceEntityRepository
              WHERE pv.product_variant_id = :id'
         )
             ->setParameter('id', $id)
-            ->getOneOrNullResult();
+            ->getResult();
     }
 
     public function getByStock(int $stock): array

@@ -31,31 +31,44 @@ class ProductController extends AbstractController
             return new JsonResponse("Product does not exist!",404);
         }
         $imgRef = "";
-        $productVariants = $productVariantRepository->getByProductId($id);
+        $productVariants = $product[0]->getProductVariants();
         foreach ($productVariants as $productVariant) {
-            if ($productVariant->getImageRef() !== null && $productVariant->getStock() > 0 && $imgRef != "") {
-                $imgRef = $productVariant->getImageRef();
+            if ($productVariant->getImgRef() !== null && $productVariant->getStock() > 0 && $imgRef != "") {
+                $imgRef = $productVariant->getImgRef();
             }
-            $product->addVariant($productVariant);
+            $product[0]->addVariant($productVariant);
         }
-       // $product->setProductVariants($productVariants);
+        // $product->setProductVariants($productVariants);
         //$product->setReviews($reviewRepository->getByProductId($id));
         //$product_str = var_export($product, true);
 
         $productAssoc = (array) $product;
         $productAssoc["imgRef"] = $imgRef; // rocno dod amo imgRef v izdelek...
-        $productJson = $serializer->serialize($productAssoc, 'json');
+        $productJson = $serializer->serialize($productAssoc, 'json',[
+            AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,
+            AbstractNormalizer::CIRCULAR_REFERENCE_LIMIT => 10]);
         return JsonResponse::fromJsonString($productJson);
     }
     #[Route('/api/getProducts', name: 'app_products_get', methods: ['GET'])] // po 30 izdelkov fetcha
     public function getProducts(EntityManagerInterface $entityManager,SerializerInterface $serializer): JsonResponse
+    {
+        $request = Request::createFromGlobals();
+        $offset = $request->query->getInt('offset', 0);
+        $productRepository = $entityManager->getRepository(Product::class);
+        $products = $productRepository->getProductsBy30($offset);
+        $productsJson = $serializer->serialize($products, 'json');
+        return JsonResponse::fromJsonString($productsJson);
+    }
+    #[Route('/api/admin/add_product', name: 'app_product_add', methods: ['POST'])] // po 30 izdelkov fetcha
+    public function addProduct(EntityManagerInterface $entityManager,SerializerInterface $serializer): JsonResponse
     {
         $productVariantRepository = $entityManager->getRepository(ProductVariant::class);
 
         $request = Request::createFromGlobals();
         $offset = $request->query->getInt('offset', 0);
         $productRepository = $entityManager->getRepository(Product::class);
-        $products = $productRepository->getProductsBy30($offset);
+        $product = "test";
+        $products = $productRepository->createProduct($product);
         $productsJson = $serializer->serialize($products, 'json');
         return JsonResponse::fromJsonString($productsJson);
     }
