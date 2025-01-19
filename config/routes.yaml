@@ -32,6 +32,10 @@ get_user_data:
     path: /api/user/get_user_data
     controller: 'App\Controller\ProductController::getUserData'
     methods: [ 'POST' ]
+update_user_profile_picture:
+    path: /api/user/update_profile_picture
+    controller: 'App\Controller\UserController::updateProfilePicture'
+    methods: [ 'POST' ]
 update_user_data:
     path: /api/user/update_user_data
     controller: 'App\Controller\UserController::updateUserData'

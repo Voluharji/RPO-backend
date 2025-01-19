@@ -48,33 +48,40 @@ class UserController extends AbstractController
     #[Route('/api/user/update_user_data', name: 'app_user_change_data', methods: ['POST'])]
     public function updateUserData(EntityManagerInterface $entityManager) : JsonResponse{
         $request = Request::createFromGlobals();
-        $repository = $entityManager->getRepository(User::class);
-        if ($request->get("id") === null) {
-            return new JsonResponse("No user id provided",400);
+        $userRepository = $entityManager->getRepository(User::class);
+        $user = $this->getUser();
+        try {
+            $userFromDb = $userRepository->getByEmail($user->getUserIdentifier()); // troll fix...
         }
-        $user= $this->getUser();
+        catch (Exception $ex){
+            return $this->json(
+                "user does not exist."
+                ,401);
+        }
         if ($request->get("username") != Null) {
-            if ($repository->loadUserByIdentifier($request->get("username")) !== null) {
-                return new JsonResponse("Username is already taken!",400);
+            if ($userRepository->getUserByUsername($request->get("username")) !== null) {
+                return $this->json(
+                    "Username is already taken!"
+                    ,400);
             }
-            $user->setUsername($request->get("username"));
+            $userFromDb->setUsername($request->get("username"));
         }
         if ($request->get("email") != Null) {
-            if ($repository->loadUserByIdentifier($request->get("email")) !== null) {
+            if ($userRepository->getByEmail($request->get("email")) !== null) {
                 return new JsonResponse("Email is already taken!",400);
             }
-            $user->setEmail($request->get("username"));
+            $userFromDb->setEmail($request->get("email"));
         }
         if ($request->get("firstName") != Null) {
-            $user->setLastName($request->get("firstName"));
+            $userFromDb->setLastName($request->get("firstName"));
         }
         if ($request->get("lastName") != Null) {
-            $user->setLastName($request->get("lastName"));
+            $userFromDb->setLastName($request->get("lastName"));
         }
-        if ($request->get("phoneNumber") != Null) {
-            $user->setPhoneNumber($request->get("phoneNumber"));
+        if ($request->get("phoneNumber") != Null && is_numeric($request->get("phoneNumber"))) {
+            $userFromDb->setPhoneNumber($request->get("phoneNumber"));
         }
-      $repository->updateUser($user);
+        $userRepository->updateUser($userFromDb);
       return $this->json("Succesfully updated user data.", 200);
     }
     #[Route('/api/admin/update_user_data', name: 'app_user_change_data', methods: ['POST'])]
@@ -116,16 +123,29 @@ class UserController extends AbstractController
     }
     #[Route('/api/user/update_profile_picture', name: 'app_user_change_data', methods: ['POST'])]
     public function updateProfilePicture(EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher) : JsonResponse{
+        $location = "/public/assets/images/profile_pictures/";
         $request = Request::createFromGlobals();
         $UserRepository = $entityManager->getRepository(User::class);
+        $request = Request::createFromGlobals();
+        $userRepository = $entityManager->getRepository(User::class);
+        $user = $this->getUser();
+        try {
+            $userFromDb = $userRepository->getByEmail($user->getUserIdentifier()); // troll fix...
+        }
+        catch (Exception $ex){
+            return $this->json(
+                "user does not exist."
+                ,401);
+        }
         if ($request->get("id") === null) {
             return new JsonResponse("No user id provided",400);
         }
+        $file = $request->files->get('profile_picture');
+        $nameId = $userFromDb->getUserId();
         $filesystem = new Filesystem();
-        $user= $UserRepository->getUserById($request->get("id"));
-        $file = $request->files->get('file');
-        $hashedPassword = $passwordHasher->hashPassword ($user, $request->request->get('password'));
-        $UserRepository->updateUser($user);
+        $user = $UserRepository->getUserById($request->get("id"));
+
+
         return $this->json("Succesfully updated user data.", 200);
     }
 }
