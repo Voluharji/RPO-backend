@@ -127,15 +127,27 @@ class ReviewController extends AbstractController
             "Updated review successfully"
             ,200);
     }
-    #[Route('/api/review_get', name: 'get',methods: ['GET'])]
-    public function getReviews(EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
+    #[Route('/api/review_get_by_user_id', name: 'app_get_review_by_user_id',methods: ['GET'])]
+    public function getReviewsByUserId(EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
+    {
+        $reviewRepository = $entityManager->getRepository(Review::class);
+        $request = Request::createFromGlobals();
+        if ($request->request->get('userId')) {
+            return $this->json("missing user id", 400);
+        }
+        $reviews = $reviewRepository->getByUserId($request->get('userId'));
+        $reviews = $serializer->serialize($reviews, 'json');
+        return JsonResponse::fromJsonString($reviews);
+    }
+    #[Route('/api/review_get_by_product_id', name: 'app_get_review_by_product_id',methods: ['GET'])]
+    public function getReviewsByProductId(EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $reviewRepository = $entityManager->getRepository(Review::class);
         $request = Request::createFromGlobals();
         if ($request->request->get('productId')) {
             return $this->json("missing product id", 400);
         }
-        $reviews = $reviewRepository->getAllReviews();
+        $reviews = $reviewRepository->getByProductId($request->request->get('productId'));
         $reviews = $serializer->serialize($reviews, 'json');
         return JsonResponse::fromJsonString($reviews);
     }

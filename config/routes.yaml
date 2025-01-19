@@ -63,8 +63,16 @@ admin_add_product:
 admin_update_review:
     path: /api/admin/update_review
     controller: 'App\Controller\CheckoutController::updateReviewAdmin'
-    methods: [ 'POST' ]
+    methods: [ 'POST' ] /api/review_get_by_user_id
 admin_add_review:
     path: /api/admin/add_review
     controller: 'App\Controller\CheckoutController::addReviewAdmin'
     methods: [ 'POST' ]
+get_review_by_user_id:
+    path: /api/review_get_by_user_id
+    controller: 'App\Controller\ReviewController::getReviewByUserId'
+    methods: [ 'GET' ]
+get_review_by_product_id:
+    path: /api/review_get_by_product_id
+    controller: 'App\Controller\CheckoutController::getReviewByProductId'
+    methods: [ 'GET' ]
