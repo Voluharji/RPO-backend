@@ -99,7 +99,7 @@ class ProductRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
-    public function searchProduct(?Filter $filter = null): array
+    public function searchProduct(?Filter $filter): array
     {
         $entityManager = $this->getEntityManager();
 

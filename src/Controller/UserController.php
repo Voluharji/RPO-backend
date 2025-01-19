@@ -34,6 +34,7 @@ class UserController extends AbstractController
                 ,401);
         }
         $userData = array(
+            "username" => $userFromDb->getUsername(),
             "firstName" => $userFromDb->getFirstName(),
             "lastName" => $userFromDb->getLastName(),
             "email" => $userFromDb->getEmail(),

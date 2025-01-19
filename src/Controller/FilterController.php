@@ -15,16 +15,16 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class FilterController extends AbstractController
 {
-    #[Route('/api/filter', name: 'app_product_filter')]
+    #[Route('/api/filter', name: 'app_product_filter', methods: ['POST'])]
     public function productFilter(EntityManagerInterface $entityManager, SerializerInterface  $serializer): JsonResponse
     {
         $request = Request::createFromGlobals();
         $filter = new Filter();
-        $filter->categories = $request->query->get('categories');
-        $filter->minPrice = $request->query->get('minPrice');
-        $filter->maxPrice = $request->query->get('maxPrice');
-        $filter->tags = $request->query->get('tags');
-        $filter->search = $request->query->get('search');
+        $filter->categories = $request->request->get('categories');
+        $filter->minPrice = $request->request->get('minPrice');
+        $filter->maxPrice = $request->request->get('maxPrice');
+        $filter->tags = $request->request->get('tags');
+        $filter->search = $request->request->get('search');
         //$filter = $request->query->get('filter');
         $productRepository = $entityManager->getRepository(Product::class);
         $products = $productRepository->searchProduct($filter);
